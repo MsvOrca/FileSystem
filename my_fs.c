@@ -17,7 +17,7 @@ struct Inode{
 	 _Bool ForD;
 	// time
 	 int File_size;
-	 struct block direct;
-	 struct block indirect;
-	 struct block double_indirect
+	 struct block *direct;
+	 struct block *indirect;
+	 struct block *double_indirect
 }
