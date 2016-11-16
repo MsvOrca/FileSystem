@@ -3,21 +3,21 @@
 
 union type 
 {
-	 struct block *indirectnodei[16];
+	 block *indirectnodei[16];
 	 char body[128];
 }
 
-struct block{
+typedef struct{
 	 union type;
-}
-struct Dir{
+}block;
+typedef struct{
 	 
-}
-struct Inode{
+}Dir;
+typedef struct{
 	 _Bool ForD;
 	// time
 	 int File_size;
-	 struct block *direct;
-	 struct block *indirect;
-	 struct block *double_indirect
-}
+	 block *direct;
+	 block *indirect;
+	 block *double_indirect
+}Inode;
