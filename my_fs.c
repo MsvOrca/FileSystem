@@ -9,8 +9,12 @@ typedef struct Block{
 typedef struct{
 
 }File;
-typedef struct{
+typedef struct Dir{
+	struct Dir *pPrevDir; //상위 디렉토리
+	struct Dir *pSimilDir;//동위 디렉토리
+	struct Dir *pNextDir;//하위 디렉토리
 
+	File *pFileData;	 
 }Dir;
 typedef struct{
 	 _Bool ForD;
@@ -24,7 +28,6 @@ int main()
 {
 
 }
-
 
 void INPUT_TIME(char *current){
 	 struct tm *t;
@@ -50,4 +53,3 @@ void INPUT_TIME(char *current){
 	 len++;
 	 len += sprintf(current + len, "%d", t -> tm_sec);
 }
-
