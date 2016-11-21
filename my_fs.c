@@ -2,27 +2,49 @@
 #include<time.h>
 
 void INPUT_TIME(char *current);
-typedef struct Block{
-	 struct Block *indirectnode[16];
+void MY_LS();
+void MY_CAT();
+void MY_SHOWFILE();
+void MY_PWD();//
+void MY_CD();//
+void MY_CP();
+void MY_CPTO();
+void MY_CPFROM();
+void MY_MKDIR();//
+void MY_RMDIR();//
+void MY_RM();
+void MY_MV();
+void MY_TOUCH();
+void MY_SHOWINODE();
+void MY_SHOWBLOCK();
+void MY_STATE();
+void MY_TREE();//
+void COMMAND();
+union type{
+	 unsigned long long index[16];
 	 char file[128];
+};
+typedef struct Block{
+	 union type iorf;
 }Block;
 typedef struct{
 
 }File;
 typedef struct Dir{
-	struct Dir *pPrevDir; //상위 디렉토리
-	struct Dir *pSimilDir;//동위 디렉토리
-	struct Dir *pNextDir;//하위 디렉토리
+	 struct Dir *pPrevDir; //상위 디렉토리
+	 struct Dir *pSimilDir;//동위 디렉토리
+	 struct Dir *pNextDir;//하위 디렉토리
 
-	File *pFileData;	 
+	 File *pFileData;	 
 }Dir;
 typedef struct{
+	 int inodenum;
 	 _Bool ForD;
 	 char time[20];
 	 int File_size;
-	 Block *direct;
-	 Block *indirect;
-	 Block *double_indirect;
+	 short direct;
+	 short indirect;
+	 short double_indirect;
 }Inode;
 int main()
 {
