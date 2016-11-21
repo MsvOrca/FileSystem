@@ -1,35 +1,41 @@
 #include<stdio.h>
 #include<time.h>
 
-void INPUT_TIME(char *current){
+void INPUT_TIME(char *current);
+
+typedef struct Block;
+
 union type 
 {
-	 block *indirectnode[16];
+	 Block *indirectnode[16];
 	 char file[128];
-}
+};
 
-typedef struct{
+typedef struct Block{
 	 union type;
-}block;
-typedef struct{
+}Block;
+typedef struct File{
 
 }File;
-typedef struct{
-	 
+typedef struct Dir{
+	Dir *pPrevDir; //상위 디렉토리
+	Dir *pSimilDir;//동위 디렉토리
+	Dir *pNextDir;//하위 디렉토리
+
+	File *pFileData;	 
 }Dir;
 typedef struct{
 	 _Bool ForD;
 	 char time[20];
 	 int File_size;
-	 block *direct;
-	 block *indirect;
-	 block *double_indirect
+	 Block *direct;
+	 Block *indirect;
+	 Block *double_indirect;
 }Inode;
 int main()
 {
 
 }
-
 
 void INPUT_TIME(char *current){
 	struct tm *t;
@@ -55,4 +61,3 @@ void INPUT_TIME(char *current){
 	len++;
 	len += sprintf(current + len, "%d", t -> tm_sec);
 }
-
