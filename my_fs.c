@@ -59,17 +59,36 @@ typedef struct{
 }Inode;
 int main()
 {
-USER_INPUT();
-printf("%s\n%s\n%s\n%s\n",Usrcmd,Usrbuf1,Usrbuf2,Usrbuf3);
-//	 while(1)
-//	 {
-//		  printf("[%s$]",directory);//now dir(pwd)
-//		  scanf("%s",&Usrint);
-	//	  switch(1)
-	//	  {
-	//			case 	
-	//	  }
-//	 }
+	 int INcase=0;
+
+	 USER_INPUT();
+	 //	 while(1)
+	 //	 {
+	 //		  printf("[%s$]",directory);//now dir(pwd)
+	 //		  scanf("%s",&Usrint);
+	 switch(INcase)
+	 {
+		  case 1 : MY_LS();break;
+		  case 2 : MY_CAT();break;
+		  case 3 : MY_SHOWFILE();break;
+		  case 4 : MY_PWD();break;
+		  case 5 : MY_CD();break;
+		  case 6 : MY_CP();break;
+		  case 7 : MY_CPTO();break;
+		  case 8 : MY_CPFROM();break;
+		  case 9 : MY_MKDIR();break;
+		  case 10 : MY_RMDIR();break;
+		  case 11 : MY_RM();break;
+		  case 12 : MY_MV();break;
+		  case 13 : MY_TOUCH();break;
+		  case 14 : MY_SHOWINODE();break;
+		  case 15 : MY_SHOWBLOCK();break;
+		  case 16 : MY_STATE();break;
+		  case 17 : MY_TREE();break;
+		  case 18 : COMMAND();break;
+defalut : printf("myfs : %s : command not found.\n",Usrcmd);break;
+	 }
+	 //	 }
 	 return 0;
 }
 void printTest(char *a)
@@ -78,10 +97,10 @@ void printTest(char *a)
 	 printf("PrintTest ====\n");
 	 while(a[i] != 0)
 	 {
-		printf("%d ",a[i]);
-		++i;
+		  printf("%d ",a[i]);
+		  ++i;
 	 }
-	printf("\nPrintfTestEnd =====\n");
+	 printf("\nPrintfTestEnd =====\n");
 }
 void USER_INPUT()
 {
@@ -131,3 +150,39 @@ void INPUT_TIME(char *current){
 	 len++;
 	 len += sprintf(current + len, "%d", t -> tm_sec);
 }
+void MY_LS()
+{}
+void MY_CAT()
+{}
+void MY_SHOWFILE()
+{}
+void MY_PWD()
+{}
+void MY_CD()
+{}
+void MY_CP()
+{}
+void MY_CPTO()
+{}
+void MY_CPFROM()
+{}
+void MY_MKDIR()
+{}
+void MY_RMDIR()
+{}
+void MY_RM()
+{}
+void MY_MV()
+{}
+void MY_TOUCH()
+{}
+void MY_SHOWINODE()
+{}
+void MY_SHOWBLOCK()
+{}
+void MY_STATE()
+{}
+void MY_TREE()
+{}
+void COMMAND()
+{}
