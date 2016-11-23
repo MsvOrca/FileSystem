@@ -1,4 +1,4 @@
-#include"my_fs_function.h"
+#include"func.h"
 #include<stdio.h>
 #include<time.h>
 #include<stdlib.h>
