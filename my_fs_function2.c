@@ -30,12 +30,12 @@ void INPUT_TIME(char *current){
 }
 
 void MY_PWD()
-{}//
+{}
 void MY_CD()
-{}//
+{}
 void MY_MKDIR()
-{}//
+{}
 void MY_RMDIR()
-{}//
+{}
 void MY_TREE()
 {}
