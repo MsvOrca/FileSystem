@@ -93,6 +93,7 @@ int main()
 		  case 16 : MY_STATE();break;
 		  case 17 : MY_TREE();break;
 		  case 18 : COMMAND();break;
+		  case 19 : return 0;
 defalut : printf("myfs : %s : command not found.\n",Usrcmd);break;
 	 }
 	 	 }
@@ -135,7 +136,7 @@ int CLASSIFY_INPUT(char buf[],int i)
 }
 void CLASSIFY_INCASE()
 {
-	 char cases[18][20]= {"myls" , "mycat" , "myshowfile","mypwd",};
+	 char cases[19][20]= {"myls" , "mycat" , "myshowfile","mypwd","mycd","mycp","mycpto","mycpfrom","mymkdir","myrmdir","myrm","mymv","mytouch", "myshowinode","myshowblock","mystate","mytree","command","byebye"};
 }
 void INPUT_TIME(char *current){
 	 struct tm *t;
