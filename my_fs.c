@@ -6,12 +6,11 @@
 
 int main()
 {
-	 int INcase=0;
 
 	 	 while(1)
 	 	 {
-			  int INcase=0;
-	 //		  printf("[%s$]",directory);//now dir(pwd)
+	 //		  printf("[%s]",directory);//now dir(pwd)
+			  printf("$");
 	 USER_INPUT();
 	 switch(INcase)
 	 {

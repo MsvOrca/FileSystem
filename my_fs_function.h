@@ -5,6 +5,7 @@ char Usrcmd[20];
 char Usrbuf1[10];
 char Usrbuf2[10];
 char Usrbuf3[10];
+int INcase=0;
 
 //structures
 

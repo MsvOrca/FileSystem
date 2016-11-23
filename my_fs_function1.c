@@ -31,6 +31,14 @@ int CLASSIFY_INPUT(char buf[],int i)
 void CLASSIFY_INCASE()
 {
 	 char cases[19][20]= {"myls" , "mycat" , "myshowfile","mypwd","mycd","mycp","mycpto","mycpfrom","mymkdir","myrmdir","myrm","mymv","mytouch", "myshowinode","myshowblock","mystate","mytree","command","byebye"};
+	 int x;
+	 for(x=0;x<19;x++)
+	 {
+if(srtcmp(Usrinput,cases[x])==0)
+{
+//	 INcase=x+1;
+}
+	 }
 }
 
 void MY_LS()
