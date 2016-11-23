@@ -9,7 +9,7 @@ int main()
 
 	 	 while(1)
 	 	 {
-//	 //		  printf("[%s]",directory);//now dir(pwd)
+////	 //		  printf("[%s]",directory);//now dir(pwd)
 			  printf("$");
 	 USER_INPUT();
 	 switch(INcase)
