@@ -34,7 +34,7 @@ void CLASSIFY_INCASE()
 	 int x;
 	 for(x=0;x<19;x++)
 	 {
-if(srtcmp(Usrinput,cases[x])==0)
+if(strcmp(Usrinput,cases[x])==0)
 {
 //	 INcase=x+1;
 }
