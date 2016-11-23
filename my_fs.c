@@ -3,34 +3,16 @@
 #include<stdlib.h>
 #include<string.h>
 
+//global virable 
+
 char Usrinput[100];
 char Usrcmd[20];
 char Usrbuf1[10];
 char Usrbuf2[10];
 char Usrbuf3[10];
 
+//structures
 
-void INPUT_TIME(char *current);
-void USER_INPUT();
-int CLASSIFY_INPUT(char *buf,int i);
-void MY_LS();
-void MY_CAT();
-void MY_SHOWFILE();
-void MY_PWD();//
-void MY_CD();//
-void MY_CP();
-void MY_CPTO();
-void MY_CPFROM();
-void MY_MKDIR();//
-void MY_RMDIR();//
-void MY_RM();
-void MY_MV();
-void MY_TOUCH();
-void MY_SHOWINODE();
-void MY_SHOWBLOCK();
-void MY_STATE();
-void MY_TREE();//
-void COMMAND();
 union type{
 	 unsigned long long index[16];
 	 char file[128];
@@ -57,15 +39,40 @@ typedef struct{
 	 short indirect;
 	 short double_indirect;
 }Inode;
+
+//function
+
+void INPUT_TIME(char *current);
+void USER_INPUT();
+int CLASSIFY_INPUT(char *buf,int i);
+void CLASSIFY_INCASE();
+void MY_LS();
+void MY_CAT();
+void MY_SHOWFILE();
+void MY_PWD();//
+void MY_CD();//
+void MY_CP();
+void MY_CPTO();
+void MY_CPFROM();
+void MY_MKDIR();//
+void MY_RMDIR();//
+void MY_RM();
+void MY_MV();
+void MY_TOUCH();
+void MY_SHOWINODE();
+void MY_SHOWBLOCK();
+void MY_STATE();
+void MY_TREE();//
+void COMMAND();
 int main()
 {
 	 int INcase=0;
 
-	 USER_INPUT();
-	 //	 while(1)
-	 //	 {
+	 	 while(1)
+	 	 {
+			  int INcase=0;
 	 //		  printf("[%s$]",directory);//now dir(pwd)
-	 //		  scanf("%s",&Usrint);
+	 USER_INPUT();
 	 switch(INcase)
 	 {
 		  case 1 : MY_LS();break;
@@ -88,7 +95,7 @@ int main()
 		  case 18 : COMMAND();break;
 defalut : printf("myfs : %s : command not found.\n",Usrcmd);break;
 	 }
-	 //	 }
+	 	 }
 	 return 0;
 }
 void printTest(char *a)
@@ -125,6 +132,10 @@ int CLASSIFY_INPUT(char buf[],int i)
 		  x++;
 	 }
 	 return i+1;
+}
+void CLASSIFY_INCASE()
+{
+	 char cases[18][20]= {"myls" , "mycat" , "myshowfile","mypwd",};
 }
 void INPUT_TIME(char *current){
 	 struct tm *t;
