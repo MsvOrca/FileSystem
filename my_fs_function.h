@@ -1,5 +1,5 @@
-//global virable 
-
+//global virable
+ 
 char Usrinput[100];
 char Usrcmd[20];
 char Usrbuf1[10];
