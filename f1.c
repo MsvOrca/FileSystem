@@ -8,6 +8,7 @@ void USER_INPUT()
 {
 	 int i=0;
 	 scanf("%[^\n]",Usrinput);
+	 getchar();
 	 i=CLASSIFY_INPUT(Usrcmd,i);
 	 i=CLASSIFY_INPUT(Usrbuf1,i);
 	 i=CLASSIFY_INPUT(Usrbuf2,i);
@@ -28,17 +29,21 @@ int CLASSIFY_INPUT(char buf[],int i)
 	 }
 	 return i+1;
 }
-void CLASSIFY_INCASE()
+int CLASSIFY_INCASE()
 {
 	 char cases[19][20]= {"myls" , "mycat" , "myshowfile","mypwd","mycd","mycp","mycpto","mycpfrom","mymkdir","myrmdir","myrm","mymv","mytouch", "myshowinode","myshowblock","mystate","mytree","command","byebye"};
 	 int x;
 	 for(x=0;x<19;x++)
 	 {
-if(strcmp(Usrinput,cases[x])==0)
+if(strcmp(Usrcmd,cases[x])==0)
 {
-//	 INcase=x+1;
+	 return x+1;
 }
 	 }
+if(x==19)
+{
+	 return 0;
+}
 }
 
 void MY_LS()
@@ -66,4 +71,11 @@ void MY_SHOWBLOCK()
 void MY_STATE()
 {}
 void COMMAND()
-{}
+{
+	 char cominput[100];
+	 printf("please input your command...\n");
+	 system("pwd");
+	 scanf("%[^\n]",cominput);
+	 getchar();
+	 system(cominput);
+}
