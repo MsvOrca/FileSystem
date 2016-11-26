@@ -46,8 +46,8 @@ void INSERT(Dir *pParentDir, Dir *pSonDir, Dir *pTmpDir, char *inp_name)
 	strcpy(pTmpDir -> name, inp_name);
 	if(pParentDir -> pNextDir == NULL)
 	{
-		pParentDir -> pNextDir = pTmpDir;
 		pTmpDir -> pPrevDir = pParentDir;
+		pParentDir -> pNextDir = pTmpDir;
 	}
 	else
 	{
@@ -59,9 +59,29 @@ void INSERT(Dir *pParentDir, Dir *pSonDir, Dir *pTmpDir, char *inp_name)
 		pSonDir -> pSimilDir = pTmpDir;
 	}
 }
-void MY_PWD(Dir *pParentDir)
+void MY_PWD(Dir *pRootDir, Dir *pParentDir)
 {
-	printf("%s\n", pParentDir -> name);
+	Dir *pTmpDir;
+	pTmpDir = (Dir *)malloc(sizeof(Dir));
+	pTmpDir = pRootDir;
+	if(pParentDir == pRootDir)
+		printf("/\n");
+
+	else{
+		printf("/");
+		while(pTmpDir != pParentDir -> pPrevDir)
+		{
+			pTmpDir = pTmpDir -> pNextDir;
+			printf("%s/", pTmpDir -> name);
+		}
+			pTmpDir = pTmpDir -> pNextDir;
+		while(strcmp(pTmpDir->name,pParentDir->name) != 0)
+		{
+			pTmpDir = pTmpDir -> pSimilDir;
+		}
+		printf("%s\n", pTmpDir -> name);
+	}
+
 }
 Dir *MY_CD(Dir *pParentDir, char *inp_name)
 {

@@ -27,7 +27,7 @@ int main()
 			case 1 : MY_LS(pCurrentDir);break;
 			case 2 : MY_CAT();;break;
 			case 3 : MY_SHOWFILE();break;
-			case 4 : MY_PWD(pCurrentDir);break;
+			case 4 : MY_PWD(pRootDir, pCurrentDir);break;
 			case 5 : pCurrentDir = MY_CD(pCurrentDir, Usrbuf1);break;
 			case 6 : MY_CP();break;
 			case 7 : MY_CPTO();break;

@@ -47,7 +47,7 @@ Dir *MAKEDIR(void);
 void MY_LS(Dir *pParentDir);
 void MY_CAT();
 void MY_SHOWFILE();
-void MY_PWD(Dir *pParentDir);//
+void MY_PWD(Dir *pRootDir, Dir *pParentDir);//
 Dir *MY_CD(Dir *pParentDir, char *inp_name);//
 void MY_CP();
 void MY_CPTO();
