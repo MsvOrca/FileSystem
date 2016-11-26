@@ -2,7 +2,7 @@
 #include<time.h>
 #include<stdlib.h>
 #include<string.h>
-#include"my_fs_function.h"
+#include"func.h"
 
 int main()
 {
