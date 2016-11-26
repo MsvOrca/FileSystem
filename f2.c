@@ -59,10 +59,29 @@ void INSERT(Dir *pParentDir, Dir *pSonDir, Dir *pTmpDir, char *inp_name)
 		pSonDir -> pSimilDir = pTmpDir;
 	}
 }
-void MY_PWD()
-{}
-void MY_CD()
-{}
+void MY_PWD(Dir *pParentDir)
+{
+	printf("%s\n", pParentDir -> name);
+}
+Dir *MY_CD(Dir *pParentDir, char *inp_name)
+{
+	Dir *pSonDir;
+	pSonDir = (Dir *)malloc(sizeof(Dir));
+	pSonDir = pParentDir -> pNextDir;
+
+	while(pSonDir != NULL)
+	{
+		if(strcmp(pSonDir -> name, inp_name) == 0)
+		{
+			pParentDir = pSonDir;
+			return pParentDir;
+		}
+		else
+			pSonDir = pSonDir -> pSimilDir;
+	}
+	if(pSonDir == NULL)
+		printf("No Directory Found\n");
+}
 void MY_MKDIR(Dir *pParentDir, char *inp_name)
 {
 	Dir *pTmpDir, *pSonDir;
