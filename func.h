@@ -5,7 +5,6 @@ char Usrcmd[20];
 char Usrbuf1[10];
 char Usrbuf2[10];
 char Usrbuf3[10];
-int INcase=0;
 
 //structures
 
@@ -41,7 +40,7 @@ typedef struct{
 void INPUT_TIME(char *current);
 void USER_INPUT();
 int CLASSIFY_INPUT(char *buf,int i);
-void CLASSIFY_INCASE();
+int CLASSIFY_INCASE();
 void MY_LS();
 void MY_CAT();
 void MY_SHOWFILE();
