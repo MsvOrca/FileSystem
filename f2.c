@@ -41,8 +41,9 @@ Dir *MAKEDIR()
 
 	return pTmpDir;
 }
-void INSERT(Dir *pParentDir, Dir *pSonDir, Dir *pTmpDir)
+void INSERT(Dir *pParentDir, Dir *pSonDir, Dir *pTmpDir, char *inp_name)
 {
+	strcpy(pTmpDir -> name, inp_name);
 	if(pParentDir -> pNextDir == NULL)
 	{
 		pParentDir -> pNextDir = pTmpDir;
@@ -62,7 +63,7 @@ void MY_PWD()
 {}
 void MY_CD()
 {}
-void MY_MKDIR(Dir *pParentDir)
+void MY_MKDIR(Dir *pParentDir, char *inp_name)
 {
 	Dir *pTmpDir, *pSonDir;
 	pTmpDir = (Dir *)malloc(sizeof(Dir));
@@ -70,10 +71,22 @@ void MY_MKDIR(Dir *pParentDir)
 	pTmpDir = MAKEDIR();
 	pSonDir = pParentDir -> pNextDir;
 
-	INSERT(pParentDir, pSonDir,pTmpDir);
-
+	INSERT(pParentDir, pSonDir,pTmpDir, inp_name);
 }
 void MY_RMDIR()
 {}
 void MY_TREE()
 {}
+void MY_LS(Dir *pParentDir)
+{
+	Dir *pSonDir;
+	pSonDir = (Dir *)malloc(sizeof(Dir));
+	pSonDir = pParentDir -> pNextDir;
+	while(pSonDir != NULL)
+	{
+		printf("%s ", pSonDir -> name);
+		pSonDir = pSonDir -> pSimilDir;
+	}
+	printf("\n");
+
+}

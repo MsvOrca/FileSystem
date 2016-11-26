@@ -42,9 +42,9 @@ void INPUT_TIME(char *current);
 void USER_INPUT();
 int CLASSIFY_INPUT(char *buf,int i);
 int CLASSIFY_INCASE();
-void INSERT(Dir *pParentDir, Dir *pSonDir, Dir *pTmpDir);
+void INSERT(Dir *pParentDir, Dir *pSonDir, Dir *pTmpDir, char *inp_name);
 Dir *MAKEDIR(void);
-void MY_LS();
+void MY_LS(Dir *pParentDir);
 void MY_CAT();
 void MY_SHOWFILE();
 void MY_PWD();//
