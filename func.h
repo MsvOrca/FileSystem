@@ -15,6 +15,14 @@ union type{
 typedef struct Block{
 	 union type iorf;
 }Block;
+typedef struct{//시간에 대한 구조체
+	int year;
+	short mon;
+	short day;
+	short hour;
+	short min;
+	short sec;
+}Touched;
 typedef struct{
 
 }File;
@@ -29,7 +37,7 @@ typedef struct Dir{
 typedef struct{
 	 int inodenum;
 	 _Bool ForD;
-	 char time[20];
+	 Touched Timed;
 	 int File_size;
 	 short direct;
 	 short indirect;
@@ -38,7 +46,7 @@ typedef struct{
 
 //function
 
-void INPUT_TIME(char *current);
+void INPUT_TIME(Inode test);
 void USER_INPUT();
 int CLASSIFY_INPUT(char *buf,int i);
 int CLASSIFY_INCASE();
@@ -53,7 +61,7 @@ void MY_CP();
 void MY_CPTO();
 void MY_CPFROM();
 void MY_MKDIR();//
-void MY_RMDIR();//
+void MY_RMDIR(Dir *pParentDir, char *inp_name);//
 void MY_RM();
 void MY_MV();
 void MY_TOUCH();
