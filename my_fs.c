@@ -18,7 +18,9 @@ int main()
 	while(1)
 	{
 		int INcase=0;
-		//printf("[%s]",directory);//now dir(pwd)
+		printf("[");
+		MY_PWD(pRootDir,pCurrentDir);
+			printf("]");
 		printf("$ ");
 		USER_INPUT();
 		INcase=CLASSIFY_INCASE();
@@ -27,13 +29,14 @@ int main()
 			case 1 : MY_LS(pCurrentDir);break;
 			case 2 : MY_CAT();;break;
 			case 3 : MY_SHOWFILE();break;
-			case 4 : MY_PWD(pRootDir, pCurrentDir);break;
+			case 4 : MY_PWD(pRootDir, pCurrentDir);
+					 printf("\n");break;
 			case 5 : pCurrentDir = MY_CD(pCurrentDir, Usrbuf1);break;
 			case 6 : MY_CP();break;
 			case 7 : MY_CPTO();break;
 			case 8 : MY_CPFROM();break;
 			case 9 : MY_MKDIR(pCurrentDir, Usrbuf1);break;
-			case 10 : MY_RMDIR();break;
+			case 10 : MY_RMDIR(pCurrentDir, Usrbuf1);break;
 			case 11 : MY_RM();break;
 			case 12 : MY_MV();break;
 			case 13 : MY_TOUCH();break;
