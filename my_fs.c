@@ -18,7 +18,7 @@ int main()
 	while(1)
 	{
 		int INcase=0;
-		//printf("[%s]",directory);//now dir(pwd)
+		printf("[%s]",MY_PWD);//now dir(pwd)
 		printf("$ ");
 		USER_INPUT();
 		INcase=CLASSIFY_INCASE();

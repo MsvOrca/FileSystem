@@ -43,7 +43,7 @@ Dir *MAKEDIR()
 }
 void INSERT(Dir *pParentDir, Dir *pSonDir, Dir *pTmpDir, char *inp_name)
 {
-	strcpy(pTmpDir -> name, inp_name);
+	strcpy(pTmpDir->name, inp_name);
 	if(pParentDir -> pNextDir == NULL)
 	{
 		pParentDir -> pNextDir = pTmpDir;
@@ -61,7 +61,7 @@ void INSERT(Dir *pParentDir, Dir *pSonDir, Dir *pTmpDir, char *inp_name)
 }
 void MY_PWD(Dir *pParentDir)
 {
-	printf("%s\n", pParentDir -> name);
+	printf("%s\n", pParentDir->name);
 }
 Dir *MY_CD(Dir *pParentDir, char *inp_name)
 {
@@ -71,7 +71,7 @@ Dir *MY_CD(Dir *pParentDir, char *inp_name)
 
 	while(pSonDir != NULL)
 	{
-		if(strcmp(pSonDir -> name, inp_name) == 0)
+		if(strcmp(pSonDir->name, inp_name) == 0)
 		{
 			pParentDir = pSonDir;
 			return pParentDir;
@@ -103,7 +103,7 @@ void MY_LS(Dir *pParentDir)
 	pSonDir = pParentDir -> pNextDir;
 	while(pSonDir != NULL)
 	{
-		printf("%s ", pSonDir -> name);
+		printf("%s ", pSonDir->name);
 		pSonDir = pSonDir -> pSimilDir;
 	}
 	printf("\n");

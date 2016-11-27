@@ -22,20 +22,21 @@ typedef struct Dir{
 	 struct Dir *pPrevDir; //상위 디렉토리
 	 struct Dir *pSimilDir;//동위 디렉토리
 	 struct Dir *pNextDir;//하위 디렉토리
-
 	 char name[10];
 	 File *pFileData;	 
 }Dir;
 typedef struct{
 	 int inodenum;
 	 _Bool ForD;
+	 char filename[5];
 	 char time[20];
 	 int File_size;
 	 short direct;
 	 short indirect;
 	 short double_indirect;
 }Inode;
-
+Inode *SB_Inode[512];
+Block *SB_Block[1024];
 //function
 
 void INPUT_TIME(char *current);
@@ -62,3 +63,6 @@ void MY_SHOWBLOCK();
 void MY_STATE();
 void MY_TREE();//
 void COMMAND();
+int CHK_INODE();
+void MAKEFILE(int Inode_Num,_Bool F_D,int fsize);
+
