@@ -1,5 +1,5 @@
 //global virable
- 
+
 char Usrinput[100];
 char Usrcmd[20];
 char Usrbuf1[10];
@@ -16,23 +16,29 @@ typedef struct Block{
 	 union type iorf;
 }Block;
 typedef struct{//시간에 대한 구조체
-	int year;
-	short mon;
-	short day;
-	short hour;
-	short min;
-	short sec;
+	 int year;
+	 short mon;
+	 short day;
+	 short hour;
+	 short min;
+	 short sec;
 }Touched;
-typedef struct{
-
+typedef struct file{
+	 struct file *Next;
 }File;
+typedef struct file_list{
+	 struct file_list *Next;
+	 char file_name[5];
+	 short Inode_Num;
+}File_List;
+
 typedef struct Dir{
 	 struct Dir *pPrevDir; //상위 디렉토리
 	 struct Dir *pSimilDir;//동위 디렉토리
 	 struct Dir *pNextDir;//하위 디렉토리
-
-	 char name[10];
-	 File *pFileData;	 
+	 char name[5];
+	 short num_file;
+	 File_List *pFileData;	 
 }Dir;
 typedef struct{
 	 int inodenum;
@@ -43,6 +49,9 @@ typedef struct{
 	 short indirect;
 	 short double_indirect;
 }Inode;
+
+Inode *L_Inode[512];
+Block L_Block[1024];
 
 //function
 
@@ -64,9 +73,12 @@ void MY_MKDIR();//
 void MY_RMDIR(Dir *pParentDir, char *inp_name);//
 void MY_RM();
 void MY_MV();
-void MY_TOUCH();
+void MY_TOUCH(Dir *pndir);
 void MY_SHOWINODE();
 void MY_SHOWBLOCK();
 void MY_STATE();
 void MY_TREE();//
 void COMMAND();
+int CHK_INODE();
+void MAKEFILE(int Inode_Num,Dir *Target_Dir,_Bool F_D,int fsize);
+
