@@ -4,35 +4,27 @@
 #include<stdlib.h>
 #include<string.h>
 
-void INPUT_TIME(char *current){
+void INPUT_TIME(Inode test){
 	struct tm *t;
 	time_t timer;
-	int len;
 	timer = time(NULL);
 	t = localtime(&timer);
 
-	len = sprintf(current, "%d",t -> tm_year + 1900);
-	*(current + len) = '/';
-	len++;
-	len += sprintf(current + len, "%d", t -> tm_mon + 1);
-	*(current + len) = '/';
-	len++;
-	len += sprintf(current + len, "%d", t -> tm_mday);
-	*(current + len) = ' ';
-	len++;
-	len += sprintf(current + len, "%d", t -> tm_hour);
-	*(current + len) = ':';
-	len++;
-	len += sprintf(current + len, "%d", t -> tm_min);
-	*(current + len) = ':';
-	len++;
-	len += sprintf(current + len, "%d", t -> tm_sec);
+	test.Timed.year = t -> tm_year + 1900;
+	test.Timed.mon = t -> tm_mon + 1;
+	test.Timed.day = t -> tm_mday;
+	test.Timed.hour = t -> tm_hour;
+	test.Timed.min = t -> tm_min;
+	test.Timed.sec = t -> tm_sec;
+
+	return;
 }
+
 Dir *MAKEDIR()
 {
 	Dir *pTmpDir;
 	pTmpDir = (Dir *)malloc(sizeof(Dir));
-	pTmpDir -> pFileData = (File *)malloc(sizeof(File));
+	pTmpDir -> pFileData = (File_List *)malloc(sizeof(File));
 	pTmpDir -> pPrevDir = NULL;
 	pTmpDir -> pSimilDir = NULL;
 	pTmpDir -> pNextDir = NULL;
@@ -43,11 +35,11 @@ Dir *MAKEDIR()
 }
 void INSERT(Dir *pParentDir, Dir *pSonDir, Dir *pTmpDir, char *inp_name)
 {
-	strcpy(pTmpDir->name, inp_name);
+	strcpy(pTmpDir -> name, inp_name);
 	if(pParentDir -> pNextDir == NULL)
 	{
-		pParentDir -> pNextDir = pTmpDir;
 		pTmpDir -> pPrevDir = pParentDir;
+		pParentDir -> pNextDir = pTmpDir;
 	}
 	else
 	{
@@ -59,9 +51,29 @@ void INSERT(Dir *pParentDir, Dir *pSonDir, Dir *pTmpDir, char *inp_name)
 		pSonDir -> pSimilDir = pTmpDir;
 	}
 }
-void MY_PWD(Dir *pParentDir)
+void MY_PWD(Dir *pRootDir, Dir *pParentDir)
 {
-	printf("%s\n", pParentDir->name);
+	Dir *pTmpDir;
+	pTmpDir = (Dir *)malloc(sizeof(Dir));
+	pTmpDir = pRootDir;
+	if(pParentDir == pRootDir)
+		printf("/");
+
+	else{
+		printf("/");
+		while(pTmpDir != pParentDir -> pPrevDir)
+		{
+			pTmpDir = pTmpDir -> pNextDir;
+			printf("%s/", pTmpDir -> name);
+		}
+		pTmpDir = pTmpDir -> pNextDir;
+		while(strcmp(pTmpDir->name,pParentDir->name) != 0)
+		{
+			pTmpDir = pTmpDir -> pSimilDir;
+		}
+		printf("%s", pTmpDir -> name);
+	}
+
 }
 Dir *MY_CD(Dir *pParentDir, char *inp_name)
 {
@@ -69,15 +81,22 @@ Dir *MY_CD(Dir *pParentDir, char *inp_name)
 	pSonDir = (Dir *)malloc(sizeof(Dir));
 	pSonDir = pParentDir -> pNextDir;
 
-	while(pSonDir != NULL)
+
+	if(inp_name[0] == '/')
 	{
-		if(strcmp(pSonDir->name, inp_name) == 0)
+	}
+	else
+	{
+		while(pSonDir != NULL)
 		{
-			pParentDir = pSonDir;
-			return pParentDir;
+			if(strcmp(pSonDir -> name, inp_name) == 0)
+			{
+				pParentDir = pSonDir;
+				return pParentDir;
+			}
+			else
+				pSonDir = pSonDir -> pSimilDir;
 		}
-		else
-			pSonDir = pSonDir -> pSimilDir;
 	}
 	if(pSonDir == NULL)
 		printf("No Directory Found\n");
@@ -92,10 +111,41 @@ void MY_MKDIR(Dir *pParentDir, char *inp_name)
 
 	INSERT(pParentDir, pSonDir,pTmpDir, inp_name);
 }
-void MY_RMDIR()
-{}
-void MY_TREE()
-{}
+void MY_RMDIR(Dir *pParentDir, char *inp_name)
+{
+	Dir *pTmpDir;
+
+	pTmpDir = (Dir *)malloc(sizeof(Dir));
+	pTmpDir = pParentDir -> pNextDir;
+
+	while(1)
+	{
+		if(pTmpDir -> pSimilDir == NULL)
+			break;
+		if(strcmp(pTmpDir -> name, inp_name) == 0)
+		{
+			if(pTmpDir = pParentDir -> pNextDir)
+				pParentDir -> pNextDir = pTmpDir -> pSimilDir;
+			else
+			pTmpDir -> pSimilDir = pTmpDir -> pSimilDir -> pSimilDir;
+			break;
+		}
+		pTmpDir = pTmpDir -> pSimilDir;
+	}
+}
+void MY_TREE(Dir *pRootDir)
+{
+	Dir *pTmpDir;
+	pTmpDir = (Dir *)malloc(sizeof(Dir));
+	//pTmpDir = pRootDir -> pNext;
+
+	printf("/\n");
+	while(1)
+	{
+
+	}
+
+}
 void MY_LS(Dir *pParentDir)
 {
 	Dir *pSonDir;
@@ -103,7 +153,7 @@ void MY_LS(Dir *pParentDir)
 	pSonDir = pParentDir -> pNextDir;
 	while(pSonDir != NULL)
 	{
-		printf("%s ", pSonDir->name);
+		printf("%s ", pSonDir -> name);
 		pSonDir = pSonDir -> pSimilDir;
 	}
 	printf("\n");
