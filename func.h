@@ -73,7 +73,7 @@ void MY_MKDIR();//
 void MY_RMDIR(Dir *pParentDir, char *inp_name);//
 void MY_RM();
 void MY_MV();
-void MY_TOUCH(Dir *pndir);
+void MY_TOUCH(Dir *pndir,char a[]);
 void MY_SHOWINODE();
 void MY_SHOWBLOCK();
 void MY_STATE();

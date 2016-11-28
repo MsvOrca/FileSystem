@@ -39,7 +39,7 @@ int main()
 			case 10 : MY_RMDIR(pCurrentDir, Usrbuf1);break;
 			case 11 : MY_RM();break;
 			case 12 : MY_MV();break;
-			case 13 : MY_TOUCH();break;
+			case 13 : MY_TOUCH(pCurrentDir,Usrbuf1);break;
 			case 14 : MY_SHOWINODE();break;
 			case 15 : MY_SHOWBLOCK();break;
 			case 16 : MY_STATE();break;
@@ -48,6 +48,11 @@ int main()
 			case 19 : return 0;
 			case 0 : printf("myfs: %s: command not found.\n",Usrcmd);break;
 		}
+		memset(Usrinput,0,100);
+		memset(Usrcmd,0,20);
+		memset(Usrbuf1,0,10);
+		memset(Usrbuf2,0,10);
+		memset(Usrbuf3,0,10);
 	}
 	return 0;
 }
