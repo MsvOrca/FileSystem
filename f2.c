@@ -84,6 +84,7 @@ Dir *MY_CD(Dir *pParentDir, char *inp_name)
 
 	if(inp_name[0] == '/')
 	{
+
 	}
 	else
 	{
