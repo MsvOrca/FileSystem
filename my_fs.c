@@ -43,7 +43,7 @@ int main()
 			case 15 : MY_SHOWBLOCK();break;
 			case 16 : MY_STATE();break;
 			case 17 : MY_TREE();break;
-			case 188888888 : return 0;
+			case 18 : return 0;
 			case 0 : system(Usrinput);break;//nedd patch
 		}
 		memset(Usrinput,0,100);

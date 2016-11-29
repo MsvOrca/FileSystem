@@ -41,7 +41,7 @@ int CLASSIFY_INCASE()
 				return x+1;
 		  }
 	 }
-	 if(x==19)
+	 if(x==18)
 	 {
 		  return 0;
 	 }
