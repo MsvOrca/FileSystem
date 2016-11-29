@@ -32,6 +32,7 @@ int CLASSIFY_INPUT(char buf[],int i)
 int CLASSIFY_INCASE()
 {
 	 char cases[19][20]= {"myls" , "mycat" , "myshowfile","mypwd","mycd","mycp","mycpto","mycpfrom","mymkdir","myrmdir","myrm","mymv","mytouch", "myshowinode","myshowblock","mystate","mytree","command","byebye"};
+
 	 int x;
 	 for(x=0;x<19;x++)
 	 {
@@ -62,32 +63,48 @@ void MY_MV()
 {}
 void MY_TOUCH(Dir *pndir,char a[])
 {
+	 Dir *temp;
+	 temp=pndir;
 	 if(strlen(a)>0)
 	 {
-	 int i,EXF=0;
-	 for(i=54;i<512;i++)
-	 {
-		  if(L_Inode[i]!=0)
+		  int i,EXF=0;
+		  for(i=54;i<512;i++)
 		  {
-				printf("filein\n");
-//		  if(strcmp(SB_Inode[i]->filename,Usrbuf1))
-///		  {
-	//			EXF=1;
-	//			break;
-	//	  }
-	 }
-	 }
-	 if(EXF==1)
-	 {
-		 INPUT_TIME(*L_Inode[i]);
-	 }
-	 else
-	 {
-	 i=CHK_INODE();
-	 printf("%d\n",i);
-	 MAKEFILE(i,pndir,0,0);
-	 }
-	}
+				if(L_Inode[i]!=0)
+				{
+						  int x;
+						  File_List *temp;
+						  temp=pndir->pFileData;
+						  for(x=0;x<pndir->num_file-1;x++)
+						  {
+								temp=temp->Next;
+								if(!strcmp(temp->file_name,a))
+								{
+									 EXF=1;
+									 break;
+								}
+
+						  }
+//error!!!!!!!!!!!!!!!!!!!!
+						  if(!strcmp(pndir->pFileData->file_name,a))
+						  {
+								EXF=1;
+								break;
+						  }
+					 }
+				}
+				if(EXF==1)
+				{
+					 INPUT_TIME(*L_Inode[i]);
+				}
+				else
+				{
+					 i=CHK_INODE();
+					 printf("%d\n",i);
+					 MAKEFILE(i,pndir,0,0);
+				}
+		  }
+	 
 	 else
 		  printf("mytouch: missing file operand\n");
 }
@@ -121,37 +138,39 @@ void MAKEFILE(int Inode_Num,Dir *Target_Dir, _Bool F_D,int fsize)//0-file 1-dir
 {
 	 Inode New_file;
 	 L_Inode[Inode_Num]=&New_file;
-	 File_List New_filelist;
-	 strcpy(New_filelist.file_name,Usrbuf1);
-	 printf("%s\n",New_filelist.file_name);
-	 New_filelist.Inode_Num=(short)Inode_Num;
-printf("%d\n",Target_Dir->num_file);	 
+	 File_List *New_filelist;
+	 New_filelist=(File_List*)calloc(1,sizeof(File_List));
+	 strcpy(New_filelist->file_name,Usrbuf1);
+	 printf("%s\n",New_filelist->file_name);
+	 New_filelist->Inode_Num=(short)Inode_Num;
+	 printf("%d\n",Target_Dir->num_file);	 
 	 if(Target_Dir->num_file==0)//nowdir have no file
 	 {
-		  printf("run\n");
-	 Target_Dir->pFileData=&New_filelist;
-	 Target_Dir->num_file++;
+		  Target_Dir->pFileData=New_filelist;
+		  Target_Dir->num_file++;
 	 }
-	 /*
+
 	 else
 	 {
 		  int x;
 		  File_List *temp;
-		  for(x=0;x<;x++)
+		  temp=Target_Dir->pFileData;
+		  for(x=0;x<Target_Dir->num_file-1;x++)
 		  {
-				temp=L_Inode[Inode_Num]->next;
-				
+				temp=temp->Next;
+
 		  }
+
+		  temp->Next=New_filelist;
+		  Target_Dir->num_file++;
 	 }
-	 */
+
 	 New_file.inodenum=Inode_Num;
 	 if(F_D==0)
 		  New_file.ForD=0;
 	 else
 		  New_file.ForD=1;
- INPUT_TIME(New_file);
+	 INPUT_TIME(New_file);
 	 New_file.File_size=fsize;
-	// printf("%s",Target_Dir->pFileData->file_name);
 }
-
 

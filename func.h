@@ -80,5 +80,5 @@ void MY_STATE();
 void MY_TREE();//
 void COMMAND();
 int CHK_INODE();
+File_List *PASS_FILELIST_NODE(Dir *Target_dir);
 void MAKEFILE(int Inode_Num,Dir *Target_Dir,_Bool F_D,int fsize);
-

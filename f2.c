@@ -149,15 +149,12 @@ void MY_TREE(Dir *pRootDir)
 void MY_LS(Dir *pParentDir)
 {
 	File_List *pTmp_File;
-	pTmp_File = (File_List *)malloc(sizeof(File_List));
+//	pTmp_File = (File_List *)malloc(sizeof(File_List));??
 	pTmp_File = pParentDir -> pFileData;
-	printf("work");
 	//while(pTmp_File != NULL)
 	short x=pParentDir->num_file;
 	for(;x>0;x--)
 	{
-		 printf("%d",x);
-	printf("working");
 		printf("%s ", pTmp_File -> file_name);
 		pTmp_File = pTmp_File -> Next;
 	}
