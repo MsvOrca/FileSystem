@@ -111,7 +111,8 @@ void MY_MKDIR(Dir *pParentDir, char *inp_name)
 	pTmpDir = MAKEDIR();
 	pSonDir = pParentDir -> pNextDir;
 
-	if(inp_name != NULL)
+	if(inp_name == NULL);
+		return ;
 	INSERT(pParentDir, pSonDir,pTmpDir, inp_name);
 }
 void MY_RMDIR(Dir *pParentDir, char *inp_name)
@@ -130,7 +131,7 @@ void MY_RMDIR(Dir *pParentDir, char *inp_name)
 			if(pTmpDir = pParentDir -> pNextDir)
 				pParentDir -> pNextDir = pTmpDir -> pSimilDir;
 			else
-			pTmpDir -> pSimilDir = pTmpDir -> pSimilDir -> pSimilDir;
+				pTmpDir -> pSimilDir = pTmpDir -> pSimilDir -> pSimilDir;
 			break;
 		}
 		pTmpDir = pTmpDir -> pSimilDir;
@@ -152,7 +153,7 @@ void MY_TREE(Dir *pRootDir)
 void MY_LS(Dir *pParentDir)
 {
 	File_List *pTmp_File;
-//	pTmp_File = (File_List *)malloc(sizeof(File_List));??
+	//	pTmp_File = (File_List *)malloc(sizeof(File_List));??
 	pTmp_File = pParentDir -> pFileData;
 	//while(pTmp_File != NULL)
 	short x=pParentDir->num_file;
