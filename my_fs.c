@@ -39,7 +39,7 @@ int main()
 			case 11 : MY_RM();break;
 			case 12 : MY_MV();break;
 			case 13 : MY_TOUCH(pCurrentDir,Usrbuf1);break;
-			case 14 : MY_SHOWINODE();break;
+			case 14 : MY_SHOWINODE(Usrbuf1);break;
 			case 15 : MY_SHOWBLOCK();break;
 			case 16 : MY_STATE();break;
 			case 17 : MY_TREE();break;

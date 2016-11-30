@@ -96,7 +96,7 @@ void MY_TOUCH(Dir *pndir,char a[])
 	 else
 		  printf("mytouch: missing file operand\n");
 }
-void MY_SHOWINODE()
+void MY_SHOWINODE(char nodenum[])
 {}
 void MY_SHOWBLOCK()
 {}
