@@ -33,8 +33,6 @@ void main(void)
 		};                                                
 
 
-		struct inode Inode={0};
-
 		// 파일 데이터
 
 		union file_data{
