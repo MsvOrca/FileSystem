@@ -37,6 +37,7 @@ typedef struct Dir{
 	 struct Dir *pPrevDir; //상위 디렉토리
 	 struct Dir *pSimilDir;//동위 디렉토리
 	 struct Dir *pNextDir;//하위 디렉토리
+	 int inode_num;
 	 char name[5];
 	 short num_file;
 	 File_List *pFileData;	 
@@ -50,7 +51,6 @@ typedef struct{
 	 short indirect;
 	 short double_indirect;
 }Inode;
-
 Inode *L_Inode[512];
 Block L_Block[1024];
 
@@ -75,7 +75,7 @@ void MY_RMDIR(Dir *pParentDir, char *inp_name);//
 void MY_RM();
 void MY_MV();
 void MY_TOUCH(Dir *pndir,char a[]);
-void MY_SHOWINODE();
+void MY_SHOWINODE(char nodenum[]);
 void MY_SHOWBLOCK();
 void MY_STATE();
 void MY_TREE();//
