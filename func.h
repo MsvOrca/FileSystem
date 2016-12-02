@@ -13,6 +13,7 @@ union type{
 	 char file[128];
 };
 typedef struct Block{
+	 _Bool blockuse;
 	 union type iorf;
 }Block;
 typedef struct{//시간에 대한 구조체
@@ -44,7 +45,7 @@ typedef struct{
 	 int inodenum;
 	 _Bool ForD;
 	 Touched Timed;
-	 int File_size;
+	 unsigned long long File_size;
 	 short direct;
 	 short indirect;
 	 short double_indirect;
@@ -73,12 +74,13 @@ void MY_MKDIR();//
 void MY_RMDIR(Dir *pParentDir, char *inp_name);//
 void MY_RM();
 void MY_MV();
-void MY_TOUCH(Dir *pndir);
+void MY_TOUCH(Dir *pndir,char a[]);
 void MY_SHOWINODE();
 void MY_SHOWBLOCK();
 void MY_STATE();
 void MY_TREE();//
 void COMMAND();
 int CHK_INODE();
+int CHK_BLOCK();
+File_List *PASS_FILELIST_NODE(Dir *Target_dir);
 void MAKEFILE(int Inode_Num,Dir *Target_Dir,_Bool F_D,int fsize);
-

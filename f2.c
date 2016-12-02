@@ -84,6 +84,7 @@ Dir *MY_CD(Dir *pParentDir, char *inp_name)
 
 	if(inp_name[0] == '/')
 	{
+
 	}
 	else
 	{
@@ -100,6 +101,7 @@ Dir *MY_CD(Dir *pParentDir, char *inp_name)
 	}
 	if(pSonDir == NULL)
 		printf("No Directory Found\n");
+	return pParentDir;
 }
 void MY_MKDIR(Dir *pParentDir, char *inp_name)
 {
@@ -109,6 +111,7 @@ void MY_MKDIR(Dir *pParentDir, char *inp_name)
 	pTmpDir = MAKEDIR();
 	pSonDir = pParentDir -> pNextDir;
 
+	if(inp_name != NULL)
 	INSERT(pParentDir, pSonDir,pTmpDir, inp_name);
 }
 void MY_RMDIR(Dir *pParentDir, char *inp_name)
@@ -149,9 +152,10 @@ void MY_TREE(Dir *pRootDir)
 void MY_LS(Dir *pParentDir)
 {
 	File_List *pTmp_File;
-	pTmp_File = (File_List *)malloc(sizeof(File_List));
-	pTmp_File = pParentDir -> pFileData -> Next;
-	while(pTmp_File != NULL)
+//	pTmp_File = (File_List *)malloc(sizeof(File_List));??
+	pTmp_File = pParentDir -> pFileData;
+	short x=pParentDir->num_file;
+	for(;x>0;x--)
 	{
 		printf("%s ", pTmp_File -> file_name);
 		pTmp_File = pTmp_File -> Next;
