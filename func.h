@@ -85,3 +85,4 @@ int CHK_INODE();
 int CHK_BLOCK();
 File_List *PASS_FILELIST_NODE(Dir *Target_dir);
 void MAKEFILE(int Inode_Num,char fname[],Dir *Target_Dir,_Bool F_D,int fsize);
+

@@ -54,11 +54,19 @@ void MY_SHOWFILE()
 void MY_CP()
 {}
 void MY_CPTO()
-{}
-void MY_CPFROM()
-{}
+{
+
+}
+void MY_CPFROM(char Source_File[],char Dest_File[])
+{
+	 FILE *sorce_file;
+	 sorce_file=fopen(Source_File,r);
+
+}
 void MY_RM()
-{}
+{
+
+}
 void MY_MV()
 {}
 void MY_TOUCH(Dir *pndir,char name[])
@@ -68,31 +76,31 @@ void MY_TOUCH(Dir *pndir,char name[])
 	 if(strlen(name)>0)
 	 {
 		  int i,EXF=0;
-						  int x;
-						  File_List *temp;
-						  temp=pndir->pFileData;
-						  for(x=0;x<pndir->num_file;x++)
-						  {
-								if(!strcmp(temp->file_name,name))
-								{
-									 EXF=1;
-									 break;
-								}
-								temp=temp->Next;
+		  int x;
+		  File_List *temp;
+		  temp=pndir->pFileData;
+		  for(x=0;x<pndir->num_file;x++)
+		  {
+				if(!strcmp(temp->file_name,name))
+				{
+					 EXF=1;
+					 break;
+				}
+				temp=temp->Next;
 
-						  }
-				if(EXF==1)
-				{
-					 i=temp->Inode_Num;
-					 INPUT_TIME(*L_Inode[i]);
-				}
-				else
-				{
-					 i=CHK_INODE();
-					 MAKEFILE(i,name,pndir,0,0);
-				}
 		  }
-	 
+		  if(EXF==1)
+		  {
+				i=temp->Inode_Num;
+				INPUT_TIME(*L_Inode[i]);
+		  }
+		  else
+		  {
+				i=CHK_INODE();
+				MAKEFILE(i,name,pndir,0,0);
+		  }
+	 }
+
 	 else
 		  printf("mytouch: missing file operand\n");
 }
@@ -159,7 +167,7 @@ void MAKEFILE(int Inode_Num,char fname[],Dir *Target_Dir, _Bool F_D,int fsize)//
 		  temp->Next=New_filelist;
 		  Target_Dir->num_file++;
 	 }
-New_file.direct=(short)CHK_BLOCK();
+	 New_file.direct=(short)CHK_BLOCK();
 	 New_file.inodenum=Inode_Num;
 	 if(F_D==0)
 		  New_file.ForD=0;
@@ -168,17 +176,10 @@ New_file.direct=(short)CHK_BLOCK();
 		  New_file.ForD=1;
 		  File_List *ParentDir,*NowDir;
 
-//ParentDir=(File_List*)calloc(1,sizeof(File_List));
-//NowDir=(File_List*)calloc(1,sizeof(File_List));
-//strcpy(ParentDir->file_name,"..");
-//strcpy(NowDir->file_name,".");
-//ParentDir->Inode_num=(short)CurrentDir_Inumber;
-//NowDir->Inode_num=(short)Inode_Num;
-
 	 }
 	 INPUT_TIME(New_file);
 	 New_file.File_size=fsize;
 	 L_Inode[Inode_Num]=&New_file;
 	 L_Inode[Target_Dir->inode_num]->inodenum+=2;
-//parent direct have to increase size;
+	 //parent direct have to increase size;
 }
