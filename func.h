@@ -76,8 +76,8 @@ void MY_RMDIR(Dir *pParentDir, char *inp_name);//
 void MY_RM();
 void MY_MV();
 void MY_TOUCH(Dir *pndir,char name[]);
-void MY_SHOWINODE(char nodenum[]);
-void MY_SHOWBLOCK();
+void MY_SHOWINODE(int);
+void MY_SHOWBLOCK(int);
 void MY_STATE();
 void MY_TREE();//
 void COMMAND();
