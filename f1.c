@@ -61,11 +61,11 @@ void MY_RM()
 {}
 void MY_MV()
 {}
-void MY_TOUCH(Dir *pndir,char a[])
+void MY_TOUCH(Dir *pndir,char name[])
 {
 	 Dir *temp;
 	 temp=pndir;
-	 if(strlen(a)>0)
+	 if(strlen(name)>0)
 	 {
 		  int i,EXF=0;
 						  int x;
@@ -73,7 +73,7 @@ void MY_TOUCH(Dir *pndir,char a[])
 						  temp=pndir->pFileData;
 						  for(x=0;x<pndir->num_file;x++)
 						  {
-								if(!strcmp(temp->file_name,a))
+								if(!strcmp(temp->file_name,name))
 								{
 									 EXF=1;
 									 break;
@@ -89,7 +89,7 @@ void MY_TOUCH(Dir *pndir,char a[])
 				else
 				{
 					 i=CHK_INODE();
-					 MAKEFILE(i,pndir,0,0);
+					 MAKEFILE(i,name,pndir,0,0);
 				}
 		  }
 	 
@@ -132,12 +132,12 @@ int CHK_BLOCK()
 	 }
 	 return i;
 }
-void MAKEFILE(int Inode_Num,Dir *Target_Dir, _Bool F_D,int fsize)//0-file 1-dir
+void MAKEFILE(int Inode_Num,char fname[],Dir *Target_Dir, _Bool F_D,int fsize)//0-file 1-dir
 {
 	 Inode New_file;
 	 File_List *New_filelist;
 	 New_filelist=(File_List*)calloc(1,sizeof(File_List));
-	 strcpy(New_filelist->file_name,Usrbuf1);
+	 strcpy(New_filelist->file_name,fname);
 	 New_filelist->Inode_Num=(short)Inode_Num;
 	 if(Target_Dir->num_file==0)//nowdir have no file
 	 {
@@ -164,7 +164,18 @@ New_file.direct=(short)CHK_BLOCK();
 	 if(F_D==0)
 		  New_file.ForD=0;
 	 else
+	 {
 		  New_file.ForD=1;
+		  File_List *ParentDir,*NowDir;
+
+//ParentDir=(File_List*)calloc(1,sizeof(File_List));
+//NowDir=(File_List*)calloc(1,sizeof(File_List));
+//strcpy(ParentDir->file_name,"..");
+//strcpy(NowDir->file_name,".");
+//ParentDir->Inode_num=(short)CurrentDir_Inumber;
+//NowDir->Inode_num=(short)Inode_Num;
+
+	 }
 	 INPUT_TIME(New_file);
 	 New_file.File_size=fsize;
 	 L_Inode[Inode_Num]=&New_file;

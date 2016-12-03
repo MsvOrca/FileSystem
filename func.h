@@ -5,6 +5,7 @@ char Usrcmd[20];
 char Usrbuf1[10];
 char Usrbuf2[10];
 char Usrbuf3[10];
+int CurrentDir_Inumber;
 
 //structures
 
@@ -74,7 +75,7 @@ void MY_MKDIR();//
 void MY_RMDIR(Dir *pParentDir, char *inp_name);//
 void MY_RM();
 void MY_MV();
-void MY_TOUCH(Dir *pndir,char a[]);
+void MY_TOUCH(Dir *pndir,char name[]);
 void MY_SHOWINODE(char nodenum[]);
 void MY_SHOWBLOCK();
 void MY_STATE();
@@ -83,4 +84,4 @@ void COMMAND();
 int CHK_INODE();
 int CHK_BLOCK();
 File_List *PASS_FILELIST_NODE(Dir *Target_dir);
-void MAKEFILE(int Inode_Num,Dir *Target_Dir,_Bool F_D,int fsize);
+void MAKEFILE(int Inode_Num,char fname[],Dir *Target_Dir,_Bool F_D,int fsize);

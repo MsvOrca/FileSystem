@@ -50,6 +50,20 @@ void INSERT(Dir *pParentDir, Dir *pSonDir, Dir *pTmpDir, char *inp_name)
 		}
 		pSonDir -> pSimilDir = pTmpDir;
 	}
+	int i;
+	i=CHK_INODE();
+	MAKEFILE(i,inp_name,pParentDir,1,0);
+	File_List *pPdir,*pNdir;
+	pPdir=(File_List*)calloc(1,sizeof(File_List));
+	pNdir=(File_List*)calloc(1,sizeof(File_List));
+	strcpy(pPdir->file_name,"..");
+	strcpy(pNdir->file_name,".");
+	pPdir->Inode_Num=(short)CurrentDir_Inumber;
+	pNdir->Inode_Num=(short)i;
+	pParentDir->pNextDir->pFileData=pPdir;
+	pParentDir->pNextDir->pFileData->Next=pNdir;
+pParentDir->pNextDir->num_file=2;
+
 }
 void MY_PWD(Dir *pRootDir, Dir *pParentDir)
 {
@@ -113,6 +127,9 @@ void MY_MKDIR(Dir *pParentDir, char *inp_name)
 
 	if(inp_name != NULL)
 	INSERT(pParentDir, pSonDir,pTmpDir, inp_name);
+
+	
+
 }
 void MY_RMDIR(Dir *pParentDir, char *inp_name)
 {
@@ -156,7 +173,7 @@ void MY_LS(Dir *pParentDir)
 	short x=pParentDir->num_file;
 	for(;x>0;x--)
 	{
-		printf("%s ", pTmp_File -> file_name);
+		printf("%s\n", pTmp_File -> file_name);
 		pTmp_File = pTmp_File -> Next;
 	}
 	printf("\n");
