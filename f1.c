@@ -73,7 +73,6 @@ void MY_TOUCH(Dir *pndir,char name[])
 {
 	 Dir *temp;
 	 temp=pndir;
-		  printf("dsf");
 	 if(strlen(name)>0)
 	 {
 		  int i,EXF=0;
@@ -324,36 +323,7 @@ void MY_SHOWBLOCK(int a)
 			// 데이터
 void MY_STATE()
 {}
-void COMMAND()
-{
-	 char cominput[100];
-	 printf("please input your command...\n");
-	 system("pwd");
-	 scanf("%[^\n]",cominput);
-	 getchar();
-	 system(cominput);
-}
 
-int CHK_INODE()
-{
-	 int i;
-	 for(i=0;i<512;i++)
-	 {
-		  if(L_Inode[i]==0)
-				break;
-	 }
-	 return i;
-}
-int CHK_BLOCK()
-{
-	 int i;
-	 for(i=54;i<512;i++)
-	 {
-		  if(L_Block[i].blockuse=0)
-				break;
-	 }
-	 return i;
-}
 void MAKEFILE(int Inode_Num,char fname[],Dir *Target_Dir, _Bool F_D,int fsize)//0-file 1-dir
 {
 	// load I_node
@@ -385,7 +355,7 @@ void MAKEFILE(int Inode_Num,char fname[],Dir *Target_Dir, _Bool F_D,int fsize)//
 		  temp->Next=New_filelist;
 		  Target_Dir->num_file++;
 	 }
-	 I_node->direct=(short)CHK_BLOCK();
+	 I_node->direct=(short)BLOCKCHECK();
 //	 I_nodee.inodenum=Inode_Num;
 	 if(F_D==0)
 		  I_node->ForD=0;
@@ -440,25 +410,27 @@ return b;
 //		printf("사용중인 아이노드 입니다.");
 }
 }
-int BLOCKCHECK(int a)
+int BLOCKCHECK()
 {
 	 FILE *ifp=fopen("mymkfs.bin","rb");
-	 unsigned long long sb_block[16]={0};
 	 fseek(ifp,128+64,0);
-	 fread(&sb_block,sizeof(unsigned long long),16,ifp);
-	 int i=1,block_use;
+	 fread(sb_block,sizeof(unsigned long long),16,ifp);
+	 int i=1,a=0;
+	 for(;a<1024;a++)
+	 {
 	 if((sb_block[a/64]&(i<<=(a%64)))==0)
-		  block_use=1;
-	 //printf("sdfa");
+		  return a;
 	 else
-		  block_use=0;
-	 //printf("dsafdf");
-	 return block_use;
+	 {}
+	 }
 
 }
-void UPDATE_FS()
+void LOADING_FS()
 {
-	 FILE *ifp=fopen("mymkfs.bin","rb+");
+	 FILE *ifp=fopen("mymkfs.bin","rb");
+	 fseek(ifp,128,0);
+	 fread(sb_inode,sizeof(unsigned long long),8,ifp);
+	 fread(sb_block,sizeof(unsigned long long),16,ifp);
 }	
 void CHANGE_SBINODE(int Inode_Num,FILE* ifp)
 {

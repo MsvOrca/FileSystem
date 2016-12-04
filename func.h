@@ -55,8 +55,6 @@ typedef struct{
 	 short indirect;
 	 short double_indirect;
 }Inode;
-Inode *L_Inode[512];
-Block L_Block[1024];
 
 //function
 
@@ -83,11 +81,9 @@ void MY_SHOWINODE(int);
 void MY_SHOWBLOCK(int);
 void MY_STATE();
 void MY_TREE();//
-void COMMAND();
-int CHK_INODE();
-int CHK_BLOCK();
 File_List *PASS_FILELIST_NODE(Dir *Target_dir);
 void MAKEFILE(int Inode_Num,char fname[],Dir *Target_Dir,_Bool F_D,int fsize);
 int INODECHECK();
+int BLOCKCHECK();
 Inode *GOTOINODE(int a, char mode,FILE* ifp);
 void CHANGE_SBINODE(int Inode_Num,FILE* ifp);
