@@ -1,3 +1,4 @@
+#include<stdio.h>
 //global virable
 
 char Usrinput[100];
@@ -5,7 +6,9 @@ char Usrcmd[20];
 char Usrbuf1[10];
 char Usrbuf2[10];
 char Usrbuf3[10];
-int CurrentDir_Inumber;
+int CurrentDir_Inumber;//have to fix
+unsigned long long sb_inode[8];
+unsigned long long sb_block[16];
 
 //structures
 
@@ -44,10 +47,10 @@ typedef struct Dir{
 	 File_List *pFileData;	 
 }Dir;
 typedef struct{
-	 int inodenum;
+//	 int inodenum;//
 	 _Bool ForD;
 	 Touched Timed;
-	 unsigned long long File_size;
+	 int File_size;
 	 short direct;
 	 short indirect;
 	 short double_indirect;
@@ -57,7 +60,7 @@ Block L_Block[1024];
 
 //function
 
-void INPUT_TIME(Inode test);
+void INPUT_TIME(Inode *test);
 void USER_INPUT();
 int CLASSIFY_INPUT(char *buf,int i);
 int CLASSIFY_INCASE();
@@ -85,4 +88,6 @@ int CHK_INODE();
 int CHK_BLOCK();
 File_List *PASS_FILELIST_NODE(Dir *Target_dir);
 void MAKEFILE(int Inode_Num,char fname[],Dir *Target_Dir,_Bool F_D,int fsize);
-
+int INODECHECK();
+Inode *GOTOINODE(int a, char mode,FILE* ifp);
+void CHANGE_SBINODE(int Inode_Num,FILE* ifp);
