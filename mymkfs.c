@@ -9,8 +9,8 @@ short boot_block=0;
 
 // 슈퍼블록
 
-unsigned long long sb_inode[8]={0};
-unsigned long long sb_block[16]={0};
+int sb_inode[16]={0};
+int sb_block[32]={0};
 
 
 // 아이노드 리스트
@@ -32,7 +32,6 @@ typedef struct{
 	short single;                        // 싱글 인다이렉트 블록  
 	short double_indirect;               // 더블 인다이렉트 블록   
 }Inode;                                                
-
 Inode I_node[512]={0};
 
 
@@ -42,11 +41,11 @@ union file_data{
 	unsigned long long indirectinode[16];      // 인다이렉트 아이노드
 	char data[128];                            // 일반 데이터
 };
-
 union file_data file[1024]={0};            
 
 
 void INPUT_TIME(Inode *test);
+
 void main(void)
 {
 	FILE *ifp=fopen("mymkfs.bin", "r");
@@ -57,8 +56,7 @@ void main(void)
 		ifp=fopen("mymkfs.bin", "wb");
 
 
-
-		// 루트 디렉토리
+		// 루트 디렉토리 생성
 
 		sb_inode[0]=1;
 		sb_block[0]=1;
@@ -72,7 +70,6 @@ void main(void)
 		INPUT_TIME(&I_node[0]);
 
 
-
 		//// 이진파일로 출력
 
 		// 부트블록
@@ -82,14 +79,13 @@ void main(void)
 
 		// 슈퍼블록
 
-		fwrite(sb_inode, sizeof(unsigned long long), 8, ifp);        
-		fwrite(sb_block, sizeof(unsigned long long), 16, ifp);         
+		fwrite(sb_inode, sizeof(int), 16, ifp);        
+		fwrite(sb_block, sizeof(int), 32, ifp);         
 
 
 		// 아이노드 리스트
 
 		fwrite(I_node, sizeof(Inode), 512, ifp);
-
 
 
 		// 일반 데이터
@@ -106,6 +102,8 @@ void main(void)
 
 	return;
 }
+
+// 파일 생성 시간 저장
 
 void INPUT_TIME(Inode *test){
 	struct tm *t;
