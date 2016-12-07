@@ -208,7 +208,7 @@ void MY_SHOWINODE(int inode_num)
 
 				if(I_node.indirect!=1024)
 				{
-					 printf("indirect block num%d\n",I_node.indirect);
+//					 printf("indirect block num%d\n",I_node.indirect);
 					 int j=0;
 					 int block_num[1023]={0};
 					 //함수화의 목표--block_num에 모든 간접블록의 번호를 기록
