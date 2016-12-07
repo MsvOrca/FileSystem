@@ -3,7 +3,6 @@
 #include<time.h>
 #include<stdlib.h>
 #include<string.h>
-//block start at 54
 void USER_INPUT()
 {
 	 int i=0;
@@ -67,41 +66,36 @@ void MY_RM()
 {
 
 }
-void MY_MV()
-{}
+void MY_MV(Dir *nowdir,char name[])
+{
+	 if(name[0]=='.' || name[0]=='/')
+		  ;
+	 else
+	 {
+	//	  MY_TOUCH(nowdir,name);
+		  //스캔 후 이름바꾸기
+	 }
+}
 void MY_TOUCH(Dir *pndir,char name[])
 {
-	 Dir *temp;
-	 temp=pndir;
+	 File_List *temp;
+	 int i;
+
 	 if(strlen(name)>0)
 	 {
-		  int i,EXF=0;
-		  int x;
-		  File_List *temp;
-		  temp=pndir->pFileData;
-		  for(x=0;x<pndir->num_file;x++)
-		  {
-				if(!strcmp(temp->file_name,name))
-				{
-					 EXF=1;
-					 break;
-				}
-				temp=temp->Next;
-
-		  }
-		  if(EXF==1)
+	 temp=CMPNAME(pndir,name);
+		  if(temp!=NULL)
 		  {
 				i=temp->Inode_Num;
-				Inode *temp;
+				Inode *tmp;
 				Inode tmpnode={0};
 				FILE *ifp=fopen("mymkfs.bin","rb+");
-				temp=GOTOINODE(i,'w',ifp);
-				INPUT_TIME(temp);
+				tmp=GOTOINODE(i,'w',ifp);
+				INPUT_TIME(tmp);
 				fwrite(&tmpnode,sizeof(Inode),1,ifp);
 				GOTOINODE(i,'w',ifp);
-				fwrite(temp,sizeof(Inode),1,ifp);
+				fwrite(tmp,sizeof(Inode),1,ifp);
 				fclose(ifp);
-				//	INPUT_TIME(*L_Inode[i]);
 		  }
 		  else
 		  {
@@ -130,12 +124,12 @@ void MY_SHOWINODE(int inode_num)
 
 		  // 아이노드 사용여부 체크
 
-		  fseek(ifp, 128, 0);
-		  fread(sb_inode, sizeof(unsigned long long), 8, ifp);
+		  fseek(ifp, 2, 0);
+		  fread(sb_inode, sizeof(unsigned int), 16, ifp);
 
 		  int i=1;
 
-		  if((sb_inode[inode_num/64]&(i<<=(inode_num%64)))==0)
+		  if((sb_inode[inode_num/32]&(i<<(inode_num%32)))==0)//<<=  -> <<
 		  {
 				printf("사용중인 아이노드가 아닙니다.");
 				return;
@@ -144,7 +138,7 @@ void MY_SHOWINODE(int inode_num)
 		  {
 				// 지정된 번호의 아이노드 출력
 
-				fseek(ifp, 128+64+128+sizeof(Inode)*inode_num, 0);  // 0,1,2번의 데이터블록의 크기 : 128, 64, 128
+				fseek(ifp, 2+64+128+sizeof(Inode)*inode_num, 0);  // 0,1,2번의 데이터블록의 크기 : 128, 64, 128
 				fread(&I_node, sizeof(Inode), 1, ifp);
 
 				if(I_node.ForD==0)
@@ -159,15 +153,15 @@ void MY_SHOWINODE(int inode_num)
 
 				// 싱글 인다이렉트 블록
 
-				if(I_node.indirect!=0)
+				if(I_node.indirect!=1024)
 				{
 					 fseek(ifp, 0, 0);       // 파일 지시자 위치 초기화
 
-					 fseek(ifp, 128+64+128+sizeof(Inode)*512+128*(I_node.indirect-131), 0);
+					 fseek(ifp, 2+64+128+sizeof(Inode)*512+128*(I_node.indirect), 0);
 					 fread(indirectinode, sizeof(unsigned long long), 16, ifp);
 
 					 int i=0x3FF;            // 000...0011 1111 1111
-					 int j=0;
+					 unsigned long long j=0;
 					 int block_num[96]={0};
 
 					 for(j=0; j<96; j++)
@@ -185,15 +179,15 @@ void MY_SHOWINODE(int inode_num)
 
 				// 더블 인다이렉트 블록 
 
-				if(I_node.double_indirect!=0)
+				if(I_node.double_indirect!=1024)
 				{
 					 fseek(ifp, 0, 0);
 
-					 fseek(ifp, 128+64+128+sizeof(Inode)*512+128*(I_node.double_indirect-131), 0);
+					 fseek(ifp, 2+64+128+sizeof(Inode)*512+128*(I_node.double_indirect), 0);
 					 fread(indirectinode, sizeof(unsigned long long), 16, ifp);
 
 					 int i=0x3FF; // 000...0011 1111 1111
-					 int j=0;  
+					 unsigned long long j=0;  
 					 int block_num[96]={0};
 
 					 for(j=0; j<96; j++)
@@ -207,11 +201,11 @@ void MY_SHOWINODE(int inode_num)
 					 {
 						  fseek(ifp, 0, 0);
 
-						  fseek(ifp, 128+64+128+sizeof(Inode)*512+128*(block_num[k]-131), 0);
+						  fseek(ifp, 2+64+128+sizeof(Inode)*512+128*(block_num[k]), 0);
 						  fread(indirectinode2, sizeof(unsigned long long), 16, ifp);
 
 						  int i=0x3FF;
-						  int h=0;
+						  unsigned long long h=0;
 						  int block_num2[96]={0};
 
 						  for(h=0; h<96; h++)
@@ -243,8 +237,8 @@ void MY_SHOWBLOCK(int a)
 	 {
 		  FILE *ifp=fopen("mymkfs.bin", "rb");
 
-		  unsigned long long sb_inode[8]={0};          // 슈퍼블록 아이노드
-		  unsigned long long sb_block[16]={0};         // 슈퍼블록 데이터블록
+	//	  unsigned long long sb_inode[8]={0};          // 슈퍼블록 아이노드
+	//	  unsigned long long sb_block[16]={0};         // 슈퍼블록 데이터블록
 		  Inode I_node={0};                      // 아이노드
 		  unsigned long long indirectinode[16]={0};    // 인다이렉트아이노드
 		  char data[128]={0};                          // 일반 데이터
@@ -252,69 +246,20 @@ void MY_SHOWBLOCK(int a)
 
 		  // 데이터블록 사용여부 체크
 
-		  fseek(ifp, 128+64, 0);
-		  fread(sb_block, sizeof(unsigned long long), 16, ifp);
+		  fseek(ifp, 2+64, 0);
+		  fread(sb_block, sizeof(unsigned int), 32, ifp);
 
 		  int i=1;
 		  int check=0;
 
-		  if((sb_block[a/64]&(i<<=(a%64)))==0)
+		  if((sb_block[a/32]&(i<<=(a%32)))==0)
 		  {
 				printf("사용중인 데이터블록이 아닙니다.");
 				return;
 		  }
 		  else
-		  {
-				fseek(ifp, 0, 0);
-
-				//// 지정된 번호의 데이터블록의 데이터 출력
-
-				// 부트블록
-
-				if(a==0)
 				{
-					 fread(data, sizeof(char), 128, ifp);
-
-					 printf("%s", data);
-				}
-
-				// 슈퍼블록 아이노드
-
-				else if(a==1)
-				{
-					 fseek(ifp, 128, 0);
-					 fread(sb_inode, sizeof(unsigned long long), 8, ifp);
-
-					 for(int i=0; i<8; i++)
-						  printf("%lld", sb_inode[i]);
-				}
-
-				// 슈퍼블록 데이터블록
-
-				else if(a==2)
-				{
-					 fseek(ifp, 128+64, 0);
-					 fread(sb_block, sizeof(unsigned long long), 16, ifp);
-
-					 for(int i=0; i<16; i++)
-						  printf("%lld", sb_block[i]);
-				}
-
-				// 아이노드
-
-				else if(3<=a&&a<=130)
-				{
-					 fseek(ifp, 128+64+128+sizeof(Inode)*(a-3), 0);
-					 fread(&I_node, sizeof(Inode), 1, ifp);
-
-					 printf("%d%d%hd%hd%hd%hd%hd%lld%hd%hd%hd", I_node.ForD, I_node.Timed.year, I_node.Timed.mon, I_node.Timed.day, I_node.Timed.hour, I_node.Timed.min, I_node.Timed.sec, I_node.File_size, I_node.direct, I_node.indirect, I_node.double_indirect);
-				}
-
-				// 데이터
-
-				else if(a>=131)
-				{
-					 fseek(ifp, 128+64+128+sizeof(Inode)*512+128*(a-131), 0);
+					 fseek(ifp, 2+64+128+sizeof(Inode)*512+128*(a), 0);
 					 fread(data, sizeof(char), 128, ifp);
 
 					 if(1)                               // 인다이렉트 아이노드인지 데이터인지 판별
@@ -323,7 +268,6 @@ void MY_SHOWBLOCK(int a)
 						  printf("INDIRECT INODE");
 				}
 
-		  }
 	 }
 	 else
 		  printf("오류 : 입력 가능한 데이터블록의 번호는 0번부터 1023번까지 입니다.\n");
@@ -379,22 +323,18 @@ void MAKEFILE(int Inode_Num,char fname[],Dir *Target_Dir, _Bool F_D,int fsize)//
 	 INPUT_TIME(I_node);
 	 I_node->File_size=fsize;
 	 GOTOINODE(Inode_Num,'w',ifp);
-	 printf("%d\n",Inode_Num);
 	 Inode tmpnode={0};
 	 fwrite(&tmpnode,sizeof(Inode),1,ifp);
 	 GOTOINODE(Inode_Num,'w',ifp);
-	 printf("%d\n",Inode_Num);
 	 fwrite(I_node,sizeof(Inode),1,ifp);
 	 CHANGE_SBINODE(Inode_Num,ifp);
-	 printf("%d\n",Inode_Num);
 
 //change sb block and real block
-
+	 int Block_Num=BLOCKCHECK();
+CHANGE_SBBLOCK(Block_Num,ifp);
 
 	 fclose(ifp);
 
-	 //	 L_Inode[Inode_Num]=&New_file;
-	 //	 L_Inode[Target_Dir->inode_num]->inodenum+=2;
 	 //parent direct have to increase size;
 }
 Inode *GOTOINODE(int a,char mode, FILE* ifp)
@@ -405,54 +345,76 @@ Inode *GOTOINODE(int a,char mode, FILE* ifp)
 
 	 // 지정된 번호의 아이노드 출력
 
-	 fseek(ifp, 128+64+128+sizeof(Inode)*a, 0);  // 0,1,2번의 데이터블록의 크기 : 128, 64, 128
+	 fseek(ifp, 2+64+128+sizeof(Inode)*a, 0);  // 0,1,2번의 데이터블록의 크기 : 128, 64, 128
 	 if(mode=='r')
 		  fread(I_node, sizeof(Inode), 1, ifp);
 	 return I_node;
+}
+void GOTPBLOCK(int blocknum,char mode, FILE* ifp)
+{
 }
 int INODECHECK()
 {
 	 FILE *ifp=fopen("mymkfs.bin", "rb");
 
-	 unsigned long long i=1; 
+	 unsigned int i=1; 
 	 int b=0;
 
-	 fseek(ifp, 128, 0);   							       // 부트블록 크기만큼 지시자 이동
-	 fread(sb_inode, sizeof(unsigned long long), 8, ifp);   // sb_inode크기 만큼 읽어들인다
-
+	 fseek(ifp, 2, 0);   							       // 부트블록 크기만큼 지시자 이동
+	 fread(sb_inode, sizeof(unsigned int), 16, ifp);   // sb_inode크기 만큼 읽어들인다
+/*
 	 //for beatcheck
+	 printf ("------------SB_INODE CHECK------------\n");
 	 int x;
-	 for(x=1;x<=64;x++)
+	 int y;
+	 for(y=15;y>=0;y--)
 	 {
-		  if((sb_inode[0]>>(64-x)&1))
+	 for(x=1;x<=32;x++)
+	 {
+		  if((sb_inode[y]>>(32-x)&1))
 				printf("1");
 		  else
 				printf("0");
 	 }
 	 printf("\n");
-
-	 //dd
+	 }
+	*/ //dd
 	 for(;b<512;b++)
 	 {
 
-		  if((sb_inode[b/64]&(i<<(b%64)))==0)
+		  if((sb_inode[b/32]&(i<<(b%32)))==0)
 				return b;
-		  //		printf("사용중인 아이노드가 아닙니다.");
 		  else{}
-		  //		printf("사용중인 아이노드 입니다.");
 	 }
 }
 int BLOCKCHECK()
 {
 	 FILE *ifp=fopen("mymkfs.bin","rb");
-	 fseek(ifp,128+64,0);
-	 fread(sb_block,sizeof(unsigned long long),16,ifp);
+	 fseek(ifp,2+64,0);
+	 fread(sb_block,sizeof(unsigned int),32,ifp);
 
-	 unsigned long long i=1;
+	 unsigned int i=1;
 	 int a=0;
+	 /*
+	 //for block check
+	 printf ("------------SB_BLOCK CHECK------------\n");
+	 int x;
+	 int y;
+	 for(y=31;y>=0;y--)
+	 {
+	 for(x=1;x<=32;x++)
+	 {
+		  if((sb_block[y]>>(32-x)&1))
+				printf("1");
+		  else
+				printf("0");
+	 }
+	 printf("\n");
+	 }
+	 */
 	 for(;a<1024;a++)
 	 {
-		  if((sb_block[a/64]&(i<<(a%64)))==0)
+		  if((sb_block[a/32]&(i<<(a%32)))==0)
 				return a;
 		  else
 		  {}
@@ -462,37 +424,55 @@ int BLOCKCHECK()
 void LOADING_FS()
 {
 	 FILE *ifp=fopen("mymkfs.bin","rb");
-	 fseek(ifp,128,0);
-	 fread(sb_inode,sizeof(unsigned long long),8,ifp);
-	 fread(sb_block,sizeof(unsigned long long),16,ifp);
+	 fseek(ifp,2,0);
+	 fread(sb_inode,sizeof(unsigned int),16,ifp);
+	 fread(sb_block,sizeof(unsigned int),32,ifp);
 }	
 void CHANGE_SBINODE(int Inode_Num,FILE* ifp)
 {
-	 fseek(ifp,128,0);
-	 fread(sb_inode,sizeof(unsigned long long),8,ifp);
+	 fseek(ifp,2,0);
+	 fread(sb_inode,sizeof(unsigned int),16,ifp);
 	 unsigned int tmp=1;
 
 	 int SBarry,SBdata;
-	 SBarry=Inode_Num/64;
-	 SBdata=Inode_Num%64;
+	 SBarry=Inode_Num/32;
+	 SBdata=Inode_Num%32;
 	 printf("SBarry : %d\nSBdata : %d\n",SBarry,SBdata);
 	 sb_inode[SBarry]=(sb_inode[SBarry] | (tmp<<SBdata));
-	 fseek(ifp,128,0);
-	 fwrite(sb_inode,sizeof(unsigned long long),8,ifp);
+	 fseek(ifp,2,0);
+	 fwrite(sb_inode,sizeof(unsigned int),16,ifp);
 	 fflush(ifp);
 	 printf("Inodecheck : %d\n",INODECHECK());
 }
 void CHANGE_SBBLOCK(int Block_Num,FILE* ifp)
 {
-	 fseek(ifp,128+64,0);
-	 fread(sb_block,sizeof(unsigned long long),16,ifp);
+	 fseek(ifp,2+64,0);
+	 fread(sb_block,sizeof(unsigned int),32,ifp);
 	 unsigned int tmp=1;
 	 int SBarry,SBdata;
-	 SBarry=Block_Num/64;
-	 SBdata=Block_Num%64;
+	 SBarry=Block_Num/32;
+	 SBdata=Block_Num%32;
 	 sb_block[SBarry]=(sb_block[SBarry] | (tmp<<SBdata));
-	 fseek(ifp,128+64,0);
-	 fwrite(sb_block,sizeof(unsigned long long),16,ifp);
+	 fseek(ifp,2+64,0);
+	 fwrite(sb_block,sizeof(unsigned int),32,ifp);
 	 fflush(ifp);
 	 printf("Blockcheck : %d\n", BLOCKCHECK());
 }
+// 파일 스캔 함수  해당 디렉토리에서 이름같은 파일 있으면 그 리스트 리턴 아니면 NULL 리턴
+File_List *CMPNAME(Dir *pndir, char name[])
+{
+		  int x;
+		  File_List *temp;
+		  temp=pndir->pFileData;
+		  for(x=0;x<pndir->num_file;x++)
+		  {
+				if(!strcmp(temp->file_name,name))
+				{
+					 return temp;
+					 
+				}
+				temp=temp->Next;
+
+		  }
+		  return NULL;
+	 }

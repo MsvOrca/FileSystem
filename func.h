@@ -7,11 +7,10 @@ char Usrbuf1[10];
 char Usrbuf2[10];
 char Usrbuf3[10];
 int CurrentDir_Inumber;//have to fix
-unsigned long long sb_inode[8];
-unsigned long long sb_block[16];
+unsigned int sb_inode[16];
+unsigned int sb_block[32];
 
 //structures
-
 union type{
 	 unsigned long long index[16];
 	 char file[128];
@@ -87,3 +86,5 @@ int INODECHECK();
 int BLOCKCHECK();
 Inode *GOTOINODE(int a, char mode,FILE* ifp);
 void CHANGE_SBINODE(int Inode_Num,FILE* ifp);
+void CHANGE_SBBLOCK(int Block_Num,FILE* ifp);
+File_List *CMPNAME(Dir *pndir, char name[]);

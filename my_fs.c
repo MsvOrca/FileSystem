@@ -6,6 +6,7 @@
 
 int main()
 {
+	 printf("%d\n",sizeof(Inode));
 	Dir *pRootDir;
 	Dir *pCurrentDir;
 	pRootDir = (Dir *)malloc(sizeof(Dir));
