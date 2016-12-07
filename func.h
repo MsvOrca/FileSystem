@@ -11,12 +11,17 @@ unsigned int sb_inode[16];
 unsigned int sb_block[32];
 
 //structures
+typedef struct{
+	 _Bool FD;
+	 char name[5];
+	 short inode;
+}Sdir;
 union type{
 	 unsigned long long index[16];
 	 char file[128];
+	 Sdir dir[16];
 };
 typedef struct Block{
-	 _Bool blockuse;
 	 union type iorf;
 }Block;
 typedef struct{//시간에 대한 구조체
@@ -46,7 +51,7 @@ typedef struct Dir{
 	 File_List *pFileData;	 
 }Dir;
 typedef struct{
-//	 int inodenum;//
+	 //	 int inodenum;//
 	 _Bool ForD;
 	 Touched Timed;
 	 int File_size;
@@ -73,7 +78,7 @@ void MY_CPTO();
 void MY_CPFROM();
 void MY_MKDIR();//
 void MY_RMDIR(Dir *pParentDir, char *inp_name);//
-void MY_RM();
+void MY_RM(Dir *nowdir,char name[]);
 void MY_MV();
 void MY_TOUCH(Dir *pndir,char name[]);
 void MY_SHOWINODE(int);
@@ -86,5 +91,7 @@ int INODECHECK();
 int BLOCKCHECK();
 Inode *GOTOINODE(int a, char mode,FILE* ifp);
 void CHANGE_SBINODE(int Inode_Num,FILE* ifp);
+void RM_SBINODE(int Inode_Num,FILE* ifp);
 void CHANGE_SBBLOCK(int Block_Num,FILE* ifp);
-File_List *CMPNAME(Dir *pndir, char name[]);
+void RM_SBBLOCK(int Block_Num,FILE* ifp);
+File_List *CMPNAME(Dir *pndir, char name[],char prev);

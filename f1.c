@@ -36,19 +36,15 @@ int CLASSIFY_INCASE()
 	 for(x=0;x<18;x++)
 	 {
 		  if(strcmp(Usrcmd,cases[x])==0)
-		  {
 				return x+1;
-		  }
 	 }
 	 if(x==18)
-	 {
 		  return 0;
-	 }
 }
 
-void MY_CAT()
+void MY_CAT()//
 {}
-void MY_SHOWFILE()
+void MY_SHOWFILE()//
 {}
 void MY_CP()
 {}
@@ -62,9 +58,33 @@ void MY_CPFROM(char Source_File[],char Dest_File[])
 	 //sorce_file=fopen(Source_File,r);
 
 }
-void MY_RM()
+void MY_RM(Dir *nowdir,char name[])
 {
-
+int Target_inode;
+if(CMPNAME(nowdir,name,'n')!=NULL)
+{
+	 nowdir->num_file--;
+	 File_List *temp1,*temp2;
+	 temp1=CMPNAME(nowdir,name,'p');
+	 temp2=CMPNAME(nowdir,name,'n');
+	 temp1->Next=temp2->Next;
+	 free(temp2);
+Target_inode=(int)(temp2->Inode_Num);
+Inode *temp_inode;
+temp_inode=GOTOINODE(Target_inode,'r',ifp);
+//블록 꺼내오기
+Target_block=(int)();
+FILE *ifp;
+ifp=fopen("mymkfs.bin","rb+");
+//about inode
+RM_SBINODE(Target_inode,ifp);
+GOTOINODE(Target_inode,'w',ifp);
+Inode tmp={0};
+fwrite(&tmp,sizeof(Inode),0,ifp);
+fclose(ifp);
+}
+else
+printf("myrm : cannot remove '%s' : No such file or directory\n",name);
 }
 void MY_MV(Dir *nowdir,char name[])
 {
@@ -72,6 +92,16 @@ void MY_MV(Dir *nowdir,char name[])
 		  ;
 	 else
 	 {
+		  File_List *temp;
+		  temp=CMPNAME(nowdir,name,'n');
+		  if(temp!=NULL)
+		  {
+
+				//경로 받으면 가능
+		  }
+		  else
+				printf("myrm : cannot remove '%s' : No such file or directory",name);
+
 	//	  MY_TOUCH(nowdir,name);
 		  //스캔 후 이름바꾸기
 	 }
@@ -83,7 +113,7 @@ void MY_TOUCH(Dir *pndir,char name[])
 
 	 if(strlen(name)>0)
 	 {
-	 temp=CMPNAME(pndir,name);
+	 temp=CMPNAME(pndir,name,'n');
 		  if(temp!=NULL)
 		  {
 				i=temp->Inode_Num;
@@ -237,8 +267,6 @@ void MY_SHOWBLOCK(int a)
 	 {
 		  FILE *ifp=fopen("mymkfs.bin", "rb");
 
-	//	  unsigned long long sb_inode[8]={0};          // 슈퍼블록 아이노드
-	//	  unsigned long long sb_block[16]={0};         // 슈퍼블록 데이터블록
 		  Inode I_node={0};                      // 아이노드
 		  unsigned long long indirectinode[16]={0};    // 인다이렉트아이노드
 		  char data[128]={0};                          // 일반 데이터
@@ -262,7 +290,7 @@ void MY_SHOWBLOCK(int a)
 					 fseek(ifp, 2+64+128+sizeof(Inode)*512+128*(a), 0);
 					 fread(data, sizeof(char), 128, ifp);
 
-					 if(1)                               // 인다이렉트 아이노드인지 데이터인지 판별
+					 if(1)                   // 인다이렉트 아이노드인지 데이터인지 판별
 						  printf("%s", data);
 					 else
 						  printf("INDIRECT INODE");
@@ -276,7 +304,7 @@ void MY_SHOWBLOCK(int a)
 }
 
 // 데이터
-void MY_STATE()
+void MY_STATE()//
 {}
 
 void MAKEFILE(int Inode_Num,char fname[],Dir *Target_Dir, _Bool F_D,int fsize)//0-file 1-dir
@@ -302,16 +330,11 @@ void MAKEFILE(int Inode_Num,char fname[],Dir *Target_Dir, _Bool F_D,int fsize)//
 		  File_List *temp;
 		  temp=Target_Dir->pFileData;
 		  for(x=0;x<Target_Dir->num_file-1;x++)
-		  {
 				temp=temp->Next;
-
-		  }
-
 		  temp->Next=New_filelist;
 		  Target_Dir->num_file++;
 	 }
 	 I_node->direct=(short)BLOCKCHECK();
-	 //	 I_nodee.inodenum=Inode_Num;
 	 if(F_D==0)
 		  I_node->ForD=0;
 	 else
@@ -329,10 +352,9 @@ void MAKEFILE(int Inode_Num,char fname[],Dir *Target_Dir, _Bool F_D,int fsize)//
 	 fwrite(I_node,sizeof(Inode),1,ifp);
 	 CHANGE_SBINODE(Inode_Num,ifp);
 
-//change sb block and real block
 	 int Block_Num=BLOCKCHECK();
 CHANGE_SBBLOCK(Block_Num,ifp);
-
+//real block should change
 	 fclose(ifp);
 
 	 //parent direct have to increase size;
@@ -421,13 +443,6 @@ int BLOCKCHECK()
 	 }
 
 }
-void LOADING_FS()
-{
-	 FILE *ifp=fopen("mymkfs.bin","rb");
-	 fseek(ifp,2,0);
-	 fread(sb_inode,sizeof(unsigned int),16,ifp);
-	 fread(sb_block,sizeof(unsigned int),32,ifp);
-}	
 void CHANGE_SBINODE(int Inode_Num,FILE* ifp)
 {
 	 fseek(ifp,2,0);
@@ -444,6 +459,19 @@ void CHANGE_SBINODE(int Inode_Num,FILE* ifp)
 	 fflush(ifp);
 	 printf("Inodecheck : %d\n",INODECHECK());
 }
+void RM_SBINODE(int Inode_Num,FILE*ifp)
+{
+	 fseek(ifp,2,0);
+	 fread(sb_inode,sizeof(unsigned int),16,ifp);
+	 unsigned int tmp=1,tempSB;
+	 int SBarry=Inode_Num/32;
+	 int SBdata=Inode_Num%32;
+	  tempSB=~sb_inode[SBarry];
+	  sb_inode[SBarry]=~(tempSB | (tmp<<SBdata));
+	  fseek(ifp,2,0);
+	  fwrite(sb_inode,sizeof(unsigned int),16,ifp);
+	  fflush(ifp);
+}
 void CHANGE_SBBLOCK(int Block_Num,FILE* ifp)
 {
 	 fseek(ifp,2+64,0);
@@ -458,19 +486,36 @@ void CHANGE_SBBLOCK(int Block_Num,FILE* ifp)
 	 fflush(ifp);
 	 printf("Blockcheck : %d\n", BLOCKCHECK());
 }
+void RM_SBBLOCK(int Block_Num,FILE* ifp)
+{
+	 fseek(ifp,2+64,0);
+	 fread(sb_block,sizeof(unsigned int),32,ifp);
+	 unsigned int tmp,tempSB;
+	 int SBarry=Block_Num/32;
+	 int SBdata=Block_Num/32;
+	 tempSB=~sb_block[SBarry];
+	 sb_block[SBarry]=~(tempSB | (tmp<<SBdata));
+	 fseek(ifp,2+64,0);
+	 fwrite(sb_block,sizeof(unsigned int),32,ifp);
+	 fflush(ifp);
+}
 // 파일 스캔 함수  해당 디렉토리에서 이름같은 파일 있으면 그 리스트 리턴 아니면 NULL 리턴
-File_List *CMPNAME(Dir *pndir, char name[])
+File_List *CMPNAME(Dir *pndir, char name[],char prev)
 {
 		  int x;
-		  File_List *temp;
+		  File_List *prevtemp,*temp;
 		  temp=pndir->pFileData;
 		  for(x=0;x<pndir->num_file;x++)
 		  {
 				if(!strcmp(temp->file_name,name))
 				{
+					 if(prev=='p')
+						  return prevtemp;
+					 else
 					 return temp;
 					 
 				}
+				prevtemp=temp;
 				temp=temp->Next;
 
 		  }

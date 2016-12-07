@@ -37,7 +37,7 @@ int main()
 			case 8 : MY_CPFROM();break;
 			case 9 : MY_MKDIR(pCurrentDir, Usrbuf1);break;
 			case 10 : MY_RMDIR(pCurrentDir, Usrbuf1);break;
-			case 11 : MY_RM();break;
+			case 11 : MY_RM(pCurrentDir,Usrbuf1);break;
 			case 12 : MY_MV();break;
 			case 13 : MY_TOUCH(pCurrentDir,Usrbuf1);break;
 			case 14 : MY_SHOWINODE(atoi(Usrbuf1));break;
