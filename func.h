@@ -34,6 +34,7 @@ typedef struct{//시간에 대한 구조체
 }Touched;
 typedef struct file{
 	 struct file *Next;
+	 union type file_type;
 }File;
 typedef struct file_list{
 	 struct file_list *Next;
@@ -68,11 +69,11 @@ int CLASSIFY_INPUT(char *buf,int i);
 int CLASSIFY_INCASE();
 void INSERT(Dir *pParentDir, Dir *pSonDir, Dir *pTmpDir, char *inp_name);
 Dir *MAKEDIR(void);
-void MY_LS(Dir *pParentDir);
+void MY_LS(Dir *pParentDir,char *inp_name,char*inp_name2,Dir *RootDir);
 void MY_CAT();
 void MY_SHOWFILE();
 void MY_PWD(Dir *pRootDir, Dir *pParentDir);//
-Dir *MY_CD(Dir *pParentDir, char *inp_name);//
+Dir *MY_CD(Dir *pParentDir, char *inp_name,Dir *RootDir);//
 void MY_CP();
 void MY_CPTO();
 void MY_CPFROM();
@@ -90,6 +91,7 @@ void MAKEFILE(int Inode_Num,char fname[],Dir *Target_Dir,_Bool F_D,int fsize);
 int INODECHECK();
 int BLOCKCHECK();
 Inode *GOTOINODE(int a, char mode,FILE* ifp);
+File *GOTOBLOCK(int blocknum,char type,char mode,FILE* ifp);
 void CHANGE_SBINODE(int Inode_Num,FILE* ifp);
 void RM_SBINODE(int Inode_Num,FILE* ifp);
 void CHANGE_SBBLOCK(int Block_Num,FILE* ifp);
@@ -97,4 +99,4 @@ void RM_SBBLOCK(int Block_Num,FILE* ifp);
 File_List *CMPNAME(Dir *pndir, char name[],char prev);
 int CHECK_INBLOCK(int inblock,int block_num[],FILE *ifp);
 int CHECK_DINBLOCK(Inode I_node,int block_num[],FILE *ifp);
-void STORE_INDIRECT(unsigned long long block_num[],int store);
+void STORE_INDIRECT(unsigned long long block_num[],int store,int num_block);
