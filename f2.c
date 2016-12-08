@@ -28,7 +28,7 @@ void OUTPUT_TIME(File_List *pFileData)
 	Tmp_Inode = GOTOINODE(pFileData -> Inode_Num, 'r', ifp);
 
 
-	switch(Tmp_Inode -> ForD)
+	switch((int)Tmp_Inode -> ForD)
 	{
 		case 1 :
 			printf("d ");
@@ -321,6 +321,7 @@ void MY_RMDIR(Dir *pParentDir, char *inp_name)
 		}
 		pTmpDir = pTmpDir -> pSimilDir;
 	}
+	MY_RM(pParentDir,inp_name);
 }
 void MY_TREE(Dir *pRootDir)
 {

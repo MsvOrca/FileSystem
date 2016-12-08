@@ -76,7 +76,7 @@ void MY_PWD(Dir *pRootDir, Dir *pParentDir);//
 Dir *MY_CD(Dir *pParentDir, char *inp_name,Dir *RootDir);//
 void MY_CP();
 void MY_CPTO();
-void MY_CPFROM();
+void MY_CPFROM(char Source_File[],char My_Dest_File[],Dir *nowdir);
 void MY_MKDIR();//
 void MY_RMDIR(Dir *pParentDir, char *inp_name);//
 void MY_RM(Dir *nowdir,char name[]);

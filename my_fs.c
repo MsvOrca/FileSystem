@@ -26,14 +26,14 @@ int main()
 		INcase=CLASSIFY_INCASE();
 		switch(INcase)
 		{
-			case 1 : MY_LS(pCurrentDir);break;
+			case 1 : MY_LS(pCurrentDir,Usrbuf1,Usrbuf2,pRootDir);break;
 			case 2 : MY_CAT();;break;
 			case 3 : MY_SHOWFILE();break;
 			case 4 : MY_PWD(pRootDir, pCurrentDir);printf("\n");break;
-			case 5 : pCurrentDir = MY_CD(pCurrentDir, Usrbuf1);break;
+			case 5 : pCurrentDir = MY_CD(pCurrentDir, Usrbuf1,pRootDir);break;
 			case 6 : MY_CP();break;
 			case 7 : MY_CPTO();break;
-			case 8 : MY_CPFROM();break;
+			case 8 : MY_CPFROM(Usrbuf1,Usrbuf2,pCurrentDir);break;
 			case 9 : MY_MKDIR(pCurrentDir, Usrbuf1);break;
 			case 10 : MY_RMDIR(pCurrentDir, Usrbuf1);break;
 			case 11 : MY_RM(pCurrentDir,Usrbuf1);break;
