@@ -70,7 +70,7 @@ int CLASSIFY_INCASE();
 void INSERT(Dir *pParentDir, Dir *pSonDir, Dir *pTmpDir, char *inp_name);
 Dir *MAKEDIR(void);
 void MY_LS(Dir *pParentDir,char *inp_name,char*inp_name2,Dir *RootDir);
-void MY_CAT();
+void MY_CAT(char *, char, char *);
 void MY_SHOWFILE();
 void MY_PWD(Dir *pRootDir, Dir *pParentDir);//
 Dir *MY_CD(Dir *pParentDir, char *inp_name,Dir *RootDir);//
@@ -82,8 +82,8 @@ void MY_RMDIR(Dir *pParentDir, char *inp_name);//
 void MY_RM(Dir *nowdir,char name[]);
 void MY_MV();
 void MY_TOUCH(Dir *pndir,char name[]);
-void MY_SHOWINODE(int);
-void MY_SHOWBLOCK(int);
+void MY_SHOWINODE(char *);
+void MY_SHOWBLOCK(char *);
 void MY_STATE();
 void MY_TREE();//
 File_List *PASS_FILELIST_NODE(Dir *Target_dir);
