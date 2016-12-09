@@ -11,12 +11,13 @@ void USER_INPUT()
 	 i=CLASSIFY_INPUT(Usrcmd,i);
 	 i=CLASSIFY_INPUT(Usrbuf1,i);
 	 i=CLASSIFY_INPUT(Usrbuf2,i);
-	 CLASSIFY_INPUT(Usrbuf3,i);
+	 i=CLASSIFY_INPUT(Usrbuf3,i);
+	 CLASSIFY_INPUT(Usrbuf4,i);
 }
 int CLASSIFY_INPUT(char buf[],int i)
 {
 	 int x=0;
-	 for(;i<100;i++)
+	 for(;i<125;i++)
 	 {
 		  if(Usrinput[i]==' ' || Usrinput[i]=='\0')
 		  {
@@ -42,9 +43,52 @@ int CLASSIFY_INCASE()
 		  return 0;
 }
 
-void MY_CAT(char name1[],char link,char name2[])//
+void MY_CAT(char file1[],char file2[],char link,char targetfile[],Dir *pnowdir)//
 {
-
+	 FILE *ifp=fopen("mymkfs.bin","rb");
+	 if(link=='>')
+	 {
+		  File *plinkfile;
+	 if(CMPNAME(pnowdir,file1,'n')==NULL)
+		  printf("mycat: %s: No such file or directory\n",file1);
+	 else
+	 {
+		 File_List *pfile = CMPNAME(pnowdir,file1,'n');
+	 }
+	 if(CMPNAME(pnowdir,file2,'n')==NULL)
+		  printf("mycat: %s: No such file or directory\n",file1);
+	 else
+	 {
+		 File_List *pfile = CMPNAME(pnowdir,file2,'n');
+	 }
+	 }
+	 else
+	 { 
+	 if(CMPNAME(pnowdir,file1,'n')==NULL)
+		  printf("mycat: %s: No such file or directory\n",file1);
+	 else
+	 {
+ File_List *pfile = CMPNAME(pnowdir,file1,'n');
+		 Inode *pinode=GOTOINODE((int)pfile->Inode_Num,'r',ifp);
+		 int blocknum=pinode->File_size/128;
+		 if(pinode->File_size%128>0)
+			  blocknum++;
+		 File *file1=ROADING_FILE((int)pfile->Inode_Num,'f',blocknum);
+		 File *temp;
+		 temp=file1;
+//		 for(int x=0;x<blocknum;x++)
+//		 {
+//			  printf("%s",temp->file_type.file);
+//temp=temp->Next;
+//		 }
+	 }
+	 if(CMPNAME(pnowdir,file2,'n')==NULL)
+		  printf("mycat: %s: No such file or directory\n",file1);
+	 else
+	 {
+	 File_List *pfile = CMPNAME(pnowdir,file2,'n');
+	 }
+	 }
 }
 void MY_SHOWFILE(int first, int end, char *Usrbuf3, Dir *pCurrentDir)//
 {
@@ -412,7 +456,7 @@ void MY_MV(Dir *nowdir,char name[])
 				//경로 받으면 가능
 		  }
 		  else
-				printf("myrm : cannot remove '%s' : No such file or directory",name);
+				printf("mymv : cannot stat '%s' : No such file or directory",name);
 
 		  //	  MY_TOUCH(nowdir,name);
 		  //스캔 후 이름바꾸기
@@ -918,6 +962,7 @@ int *MAKE_BLOCKLIST(int inode_num)
 	 int blocknum,inblocknum;
 	 blocknum = temp_inode->File_size/128;
 	 int *blocklist;
+	 int templist[1023];
 	 blocklist=(int*)calloc(blocknum,sizeof(int));
 	 blocklist[0]=temp_inode->direct;
 	 if(temp_inode->File_size%128>0)
@@ -927,28 +972,37 @@ int *MAKE_BLOCKLIST(int inode_num)
 		  if(blocknum+1<=97)
 		  {
 				inblocknum=blocknum;
-				CHECK_INBLOCK(temp_inode->indirect,&blocklist[1],ifp);
+				CHECK_INBLOCK(temp_inode->indirect,&templist[1],ifp);
 		  }
 		  else
 		  {
 				inblocknum=96;
-				CHECK_INBLOCK(temp_inode->indirect,&blocklist[1],ifp);
-				CHECK_DINBLOCK(*temp_inode,&blocklist[inblocknum],ifp);
+				CHECK_INBLOCK(temp_inode->indirect,&templist[1],ifp);
+				CHECK_DINBLOCK(*temp_inode,&templist[inblocknum+1],ifp);
 		  }
 	 }
 	 fclose(ifp);
+//	 for(int x=1;x<blocknum;x++)
+//	 {
+//		  blocklist[x]=templist[x];
+//		  printf("block %d",blocklist[x]);
+//	 }
 	 return blocklist;
 }
 
-File *ROADING_FILE(int inode_num,char type)
+File *ROADING_FILE(int inode_num,char type,int blocknum)
 {
 	 FILE *ifp=fopen("mymkfs.bin","rb");
-	 int * blocklist=MAKE_BLOCKLIST(inode_num);
+	 int *blocklist= MAKE_BLOCKLIST(inode_num);
 	 File *head,*temp;
 	 head=(File*)calloc(1,sizeof(File));
 	 head=GOTOBLOCK(blocklist[0],type,'r',ifp);
 	 temp=head;
-	 for(int x=1;x<sizeof(blocklist)/4;x++)
-		  temp->Next=GOTOBLOCK(blocklist[x],type,'r',ifp);
+	 for(int x=1;x<blocknum;x++)
+	 {
+		  printf("%d\n",(int)blocklist[x]);
+//		  temp->Next=GOTOBLOCK(blocklist[x],type,'r',ifp);
+//		  temp=temp->Next;
+	 }
 	 return head;
 }
