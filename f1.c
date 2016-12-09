@@ -42,8 +42,10 @@ int CLASSIFY_INCASE()
 		  return 0;
 }
 
-void MY_CAT()//
-{}
+void MY_CAT(char name1[],char link,char name2[])//
+{
+
+}
 void MY_SHOWFILE(int first, int end, char *Usrbuf3, Dir *pCurrentDir)//
 {
 	 FILE *ifp=fopen("mymkfs.bin", "rb");	
@@ -199,126 +201,131 @@ void MY_CPTO(char My_Source_File[],char Dest_File[])
 }
 void MY_CPFROM(char Source_File[],char My_Dest_File[],Dir *nowdir)
 {
-	 FILE *source_file,*ifp;
-	 ifp=fopen("mymkfs.bin","rb+");
-	 int f_size,need_block;
-	 if((source_file=fopen(Source_File,"r"))==NULL)
+	 if(strlen(My_Dest_File)>0)
 	 {
-		  printf("파일을 열 수 없습니다.\n");
-		  return;
-	 }
-	 if(CMPNAME(nowdir,My_Dest_File,'n')!=NULL)
-	 {
-		  printf("현재디렉토리에 같은 이름의 파일이 있습니다.\n");
-		  return;
-	 }
-	 fseek(source_file,0,SEEK_END);
-	 f_size=ftell(source_file);
-	 need_block=f_size/128;
-	 int need_inblock,need_dinblock;
-	 if(need_block>=97)
-	 {
-		  need_inblock=96;
-		  need_dinblock=(need_block-97)/96;
-		  if((need_block-97)%96>0)
-				need_dinblock++;
-	 }
-	 else
-		  need_inblock=need_block-1;
-	 
-
-	 if(f_size%128>0)
-		  need_block++;
-	 unsigned long long file_block[need_block];
-	 memset(file_block,0,need_block);
-	 unsigned long long file_dinblock[need_dinblock];
-	 memset(file_dinblock,0,need_dinblock);
-	 // 아이노드 기록 run
-	 int inodenum;
-	 inodenum=INODECHECK();
-	 CHANGE_SBINODE(inodenum,ifp);
-	 Inode new_inode;
-	 new_inode.ForD=0;
-	 INPUT_TIME(&new_inode);
-	 new_inode.File_size=f_size;
-	 //블록배정
-	 new_inode.direct=(short)BLOCKCHECK();
-	 CHANGE_SBBLOCK((int)new_inode.direct,ifp);
-	 if(need_inblock==0)
-		  new_inode.indirect=1024;
-	 if(need_inblock>0)
-	 {
-		  new_inode.indirect=(short)BLOCKCHECK();
-		  CHANGE_SBBLOCK((int)new_inode.indirect,ifp);
-	 }
-	 if(need_dinblock>0)
-	 {
-		  new_inode.double_indirect=(short)BLOCKCHECK();
-		  CHANGE_SBBLOCK((int)new_inode.double_indirect,ifp);
-		  for(int x=0;x<need_dinblock;x++)
+		  FILE *source_file,*ifp;
+		  ifp=fopen("mymkfs.bin","rb+");
+		  int f_size,need_block;
+		  if((source_file=fopen(Source_File,"r"))==NULL)
 		  {
-				file_dinblock[x]=(unsigned long long)BLOCKCHECK();
-				CHANGE_SBBLOCK((int)file_dinblock[x],ifp);
+				printf("파일을 열 수 없습니다.\n");
+				return;
 		  }
-	 }
-	 else
-		  new_inode.double_indirect=1024;
-	 // run
-	 GOTOINODE(inodenum,'w',ifp);
-	 fwrite(&new_inode,sizeof(Inode),1,ifp);
-
-	 file_block[0]=(unsigned long long)new_inode.direct;
-	 for(int x=1;x<need_block;x++)
-	 {
-		  file_block[x]=(unsigned long long)BLOCKCHECK();
-		  CHANGE_SBBLOCK((int)file_block[x],ifp);
-	 }
-	 //블록에다 쓰기
-
-	 if(need_inblock>0)
-	 {
-		  if(need_dinblock<0)
-	 STORE_INDIRECT(&file_block[1],(int)new_inode.indirect,need_inblock);
+		  if(CMPNAME(nowdir,My_Dest_File,'n')!=NULL)
+		  {
+				printf("현재디렉토리에 같은 이름의 파일이 있습니다.\n");
+				return;
+		  }
+		  fseek(source_file,0,SEEK_END);
+		  f_size=ftell(source_file);
+		  need_block=f_size/128;
+		  int need_inblock,need_dinblock;
+		  if(need_block>=97)
+		  {
+				need_inblock=96;
+				need_dinblock=(need_block-97)/96;
+				if((need_block-97)%96>0)
+					 need_dinblock++;
+		  }
 		  else
-	 STORE_INDIRECT(&file_block[1],(int)new_inode.indirect,96);
-	 }
-	 if(need_dinblock>0)
-	 {
-		  file_dinblock[need_dinblock]=0;
-		  STORE_INDIRECT(file_dinblock,(int)new_inode.double_indirect,need_dinblock+1);
-		  for(int x=0;x<need_dinblock;x++)
+				need_inblock=need_block-1;
+
+
+		  if(f_size%128>0)
+				need_block++;
+		  unsigned long long file_block[need_block];
+		  memset(file_block,0,need_block);
+		  unsigned long long file_dinblock[need_dinblock];
+		  memset(file_dinblock,0,need_dinblock);
+		  // 아이노드 기록 run
+		  int inodenum;
+		  inodenum=INODECHECK();
+		  CHANGE_SBINODE(inodenum,ifp);
+		  Inode new_inode;
+		  new_inode.ForD=0;
+		  INPUT_TIME(&new_inode);
+		  new_inode.File_size=f_size;
+		  //블록배정
+		  new_inode.direct=(short)BLOCKCHECK();
+		  CHANGE_SBBLOCK((int)new_inode.direct,ifp);
+		  if(need_inblock==0)
+				new_inode.indirect=1024;
+		  if(need_inblock>0)
 		  {
-				file_block[need_block]=0;
-		  STORE_INDIRECT(&file_block[97+96*x],(int)file_dinblock[x],96);
+				new_inode.indirect=(short)BLOCKCHECK();
+				CHANGE_SBBLOCK((int)new_inode.indirect,ifp);
 		  }
-	 }
-	 for(int x=0;x<need_block-1;x++)
-	 {
-		  GOTOBLOCK(file_block[x],'f','w',ifp);
-		  fseek(source_file,128*x,0);
+		  if(need_dinblock>0)
+		  {
+				new_inode.double_indirect=(short)BLOCKCHECK();
+				CHANGE_SBBLOCK((int)new_inode.double_indirect,ifp);
+				for(int x=0;x<need_dinblock;x++)
+				{
+					 file_dinblock[x]=(unsigned long long)BLOCKCHECK();
+					 CHANGE_SBBLOCK((int)file_dinblock[x],ifp);
+				}
+		  }
+		  else
+				new_inode.double_indirect=1024;
+		  // run
+		  GOTOINODE(inodenum,'w',ifp);
+		  fwrite(&new_inode,sizeof(Inode),1,ifp);
+
+		  file_block[0]=(unsigned long long)new_inode.direct;
+		  for(int x=1;x<need_block;x++)
+		  {
+				file_block[x]=(unsigned long long)BLOCKCHECK();
+				CHANGE_SBBLOCK((int)file_block[x],ifp);
+		  }
+		  //블록에다 쓰기
+
+		  if(need_inblock>0)
+		  {
+				if(need_dinblock<0)
+					 STORE_INDIRECT(&file_block[1],(int)new_inode.indirect,need_inblock);
+				else
+					 STORE_INDIRECT(&file_block[1],(int)new_inode.indirect,96);
+		  }
+		  if(need_dinblock>0)
+		  {
+				file_dinblock[need_dinblock]=0;
+				STORE_INDIRECT(file_dinblock,(int)new_inode.double_indirect,need_dinblock+1);
+				for(int x=0;x<need_dinblock;x++)
+				{
+					 file_block[need_block]=0;
+					 STORE_INDIRECT(&file_block[97+96*x],(int)file_dinblock[x],96);
+				}
+		  }
+		  for(int x=0;x<need_block-1;x++)
+		  {
+				GOTOBLOCK(file_block[x],'f','w',ifp);
+				fseek(source_file,128*x,0);
+				char tmpfile[128]={0};
+				fread(tmpfile,sizeof(char),128,source_file);
+				fwrite(tmpfile,sizeof(char),128,ifp);
+		  }
+		  GOTOBLOCK(file_block[need_block-1],'f','w',ifp);
+		  fseek(source_file,128*(need_block-1),0);
 		  char tmpfile[128]={0};
-		  fread(tmpfile,sizeof(char),128,source_file);
+		  fread(tmpfile,sizeof(char),(f_size-(need_block*128)),source_file);
 		  fwrite(tmpfile,sizeof(char),128,ifp);
-	 }
-	 GOTOBLOCK(file_block[need_block-1],'f','w',ifp);
-	 fseek(source_file,128*(need_block-1),0);
-	 char tmpfile[128]={0};
-	 fread(tmpfile,sizeof(char),(f_size-(need_block*128)),source_file);
-	 fwrite(tmpfile,sizeof(char),128,ifp);
-	 fclose(source_file);
-	 fclose(ifp);
-	 //디렉토리에 추가
-	 File_List *New_filelist;
-	 New_filelist=(File_List*)calloc(1,sizeof(File_List));
-	 strcpy(New_filelist->file_name,My_Dest_File);
-	 New_filelist->Inode_Num=(short)inodenum;
+		  fclose(source_file);
+		  fclose(ifp);
+		  //디렉토리에 추가
+		  File_List *New_filelist;
+		  New_filelist=(File_List*)calloc(1,sizeof(File_List));
+		  strcpy(New_filelist->file_name,My_Dest_File);
+		  New_filelist->Inode_Num=(short)inodenum;
 		  int x;
 		  File_List *temp;
 		  temp=nowdir->pFileData;
 		  for(x=0;x<nowdir->num_file-1;x++)
 				temp=temp->Next;
 		  temp->Next=New_filelist;
-nowdir->num_file++;
+		  nowdir->num_file++;
+	 }
+	 else
+		  printf("mycpfrom: missing file operand\n");
 
 }
 void MY_RM(Dir *nowdir,char name[])
@@ -345,10 +352,33 @@ void MY_RM(Dir *nowdir,char name[])
 		  int num_block=1;
 		  Target_block[0]=temp_inode->direct;
 		  if(temp_inode->indirect!=1024)
+		  {
 				num_block+=CHECK_INBLOCK(temp_inode->indirect,&Target_block[1],ifp);
+				RM_SBBLOCK(temp_inode->indirect,ifp);
+		  }
+		  else
+				RM_SBBLOCK(temp_inode->direct,ifp);
 		  if(temp_inode->double_indirect!=1024)
+		  {
 				num_block+=CHECK_DINBLOCK(*temp_inode,&Target_block[num_block],ifp);
-		  printf("numblock %d\n",num_block);
+				int single[96];
+				int temp,insingle;
+				temp=temp_inode->File_size/128;
+				if(temp_inode->File_size%128>0)
+					 temp++;
+				insingle=(temp-97)/96;
+				if((temp-97)/96>0)
+					 insingle++;
+				CHECK_INBLOCK(temp_inode->double_indirect,single,ifp);
+				for(int x=0;x<insingle;x++)
+				{
+					 RM_SBBLOCK(single[x],ifp);
+				}
+				RM_SBBLOCK(temp_inode->double_indirect,ifp);
+		  }
+		  num_block=temp_inode->File_size/128;
+		  if(temp_inode->File_size%128>0)
+				num_block++;
 		  for(int x=0;x<num_block;x++)
 		  {
 				printf("rm block %d\n",Target_block[x]);
@@ -468,7 +498,7 @@ void MY_SHOWINODE(int inode_num)
 
 				// 싱글 인다이렉트 블록
 
-					 int listnum;
+				int listnum;
 				if(I_node.indirect!=1024)
 				{
 					 j=CHECK_INBLOCK(I_node.indirect,&block_num[1],ifp);
@@ -710,23 +740,23 @@ int BLOCKCHECK()
 
 	 unsigned int i=1;
 	 int a=0;
-	 /*
+	 //	 /*
 	 //for block check
 	 printf ("------------SB_BLOCK CHECK------------\n");
 	 int x;
 	 int y;
 	 for(y=31;y>=0;y--)
 	 {
-	 for(x=1;x<=32;x++)
-	 {
-	 if((sb_block[y]>>(32-x)&1))
-	 printf("1");
-	 else
-	 printf("0");
+		  for(x=1;x<=32;x++)
+		  {
+				if((sb_block[y]>>(32-x)&1))
+					 printf("1");
+				else
+					 printf("0");
+		  }
+		  printf("\n");
 	 }
-	 printf("\n");
-	 }
-	  */
+	 //	  */
 	 for(;a<1024;a++)
 	 {
 		  if((sb_block[a/32]&(i<<(a%32)))==0)
@@ -745,12 +775,12 @@ void CHANGE_SBINODE(int Inode_Num,FILE* ifp)
 	 int SBarry,SBdata;
 	 SBarry=Inode_Num/32;
 	 SBdata=Inode_Num%32;
-//	 printf("SBarry : %d\nSBdata : %d\n",SBarry,SBdata);
+	 //	 printf("SBarry : %d\nSBdata : %d\n",SBarry,SBdata);
 	 sb_inode[SBarry]=(sb_inode[SBarry] | (tmp<<SBdata));
 	 fseek(ifp,2,0);
 	 fwrite(sb_inode,sizeof(unsigned int),16,ifp);
 	 fflush(ifp);
-//	 printf("Inodecheck : %d\n",INODECHECK());
+	 //	 printf("Inodecheck : %d\n",INODECHECK());
 }
 void RM_SBINODE(int Inode_Num,FILE*ifp)
 {
@@ -777,7 +807,8 @@ void CHANGE_SBBLOCK(int Block_Num,FILE* ifp)
 	 fseek(ifp,2+64,0);
 	 fwrite(sb_block,sizeof(unsigned int),32,ifp);
 	 fflush(ifp);
-//	 printf("Blockcheck : %d\n", BLOCKCHECK());
+	 BLOCKCHECK();
+	 // printf("Blockcheck : %d\n", BLOCKCHECK());
 }
 void RM_SBBLOCK(int Block_Num,FILE* ifp)
 {
@@ -805,7 +836,7 @@ File_List *CMPNAME(Dir *pndir, char name[],char prev)
 	 temp=pndir->pFileData;
 	 for(x=0;x<pndir->num_file;x++)
 	 {
-		//  printf("run");
+		  //  printf("run");
 		  if(!strcmp(temp->file_name,name))
 		  {
 				if(prev=='p')
@@ -837,7 +868,7 @@ int CHECK_INBLOCK(int inblock,int block_num[],FILE *ifp)
 				break;
 
 	 }
-				return point_num;
+	 return point_num;
 }
 int CHECK_DINBLOCK(Inode I_node,int block_num[],FILE *ifp)//테스트 필요
 {
@@ -878,4 +909,46 @@ void STORE_INDIRECT(unsigned long long block_num[], int store,int num_block)
 	 fflush(ifp);
 	 fclose(ifp);
 }
+int *MAKE_BLOCKLIST(int inode_num)
+{
+	 FILE *ifp;
+	 ifp=fopen("mymkfs.bin","rb");
+	 Inode *temp_inode;
+	 temp_inode=GOTOINODE(inode_num,'r',ifp);
+	 int blocknum,inblocknum;
+	 blocknum = temp_inode->File_size/128;
+	 int *blocklist;
+	 blocklist=(int*)calloc(blocknum,sizeof(int));
+	 blocklist[0]=temp_inode->direct;
+	 if(temp_inode->File_size%128>0)
+		  blocknum++;
+	 if(blocknum>1)
+	 {
+		  if(blocknum+1<=97)
+		  {
+				inblocknum=blocknum;
+				CHECK_INBLOCK(temp_inode->indirect,&blocklist[1],ifp);
+		  }
+		  else
+		  {
+				inblocknum=96;
+				CHECK_INBLOCK(temp_inode->indirect,&blocklist[1],ifp);
+				CHECK_DINBLOCK(*temp_inode,&blocklist[inblocknum],ifp);
+		  }
+	 }
+	 fclose(ifp);
+	 return blocklist;
+}
 
+File *ROADING_FILE(int inode_num,char type)
+{
+	 FILE *ifp=fopen("mymkfs.bin","rb");
+	 int * blocklist=MAKE_BLOCKLIST(inode_num);
+	 File *head,*temp;
+	 head=(File*)calloc(1,sizeof(File));
+	 head=GOTOBLOCK(blocklist[0],type,'r',ifp);
+	 temp=head;
+	 for(int x=1;x<sizeof(blocklist)/4;x++)
+		  temp->Next=GOTOBLOCK(blocklist[x],type,'r',ifp);
+	 return head;
+}

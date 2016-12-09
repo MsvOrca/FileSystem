@@ -77,7 +77,7 @@ Dir *MY_CD(Dir *pParentDir, char *inp_name,Dir *RootDir);//
 void MY_CP();
 void MY_CPTO();
 void MY_CPFROM(char Source_File[],char My_Dest_File[],Dir *nowdir);
-void MY_MKDIR();//
+void MY_MKDIR(Dir *pParentDir,char *inp_name);//
 void MY_RMDIR(Dir *pParentDir, char *inp_name);//
 void MY_RM(Dir *nowdir,char name[]);
 void MY_MV();
@@ -100,3 +100,5 @@ File_List *CMPNAME(Dir *pndir, char name[],char prev);
 int CHECK_INBLOCK(int inblock,int block_num[],FILE *ifp);
 int CHECK_DINBLOCK(Inode I_node,int block_num[],FILE *ifp);
 void STORE_INDIRECT(unsigned long long block_num[],int store,int num_block);
+int *MAKE_BLOCKLIST(int inode_num);
+File *ROADING_FILE(int inode_num,char type);
