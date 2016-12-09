@@ -27,7 +27,7 @@ int main()
 		switch(INcase)
 		{
 			case 1 : MY_LS(pCurrentDir,Usrbuf1,Usrbuf2,pRootDir);break;
-			case 2 : MY_CAT();;break;
+			case 2 : MY_CAT(Usrbuf1,Usrbuf2,Usrbuf3[0],Usrbuf4,pCurrentDir);break;
 			case 3 : MY_SHOWFILE();break;
 			case 4 : MY_PWD(pRootDir, pCurrentDir);printf("\n");break;
 			case 5 : pCurrentDir = MY_CD(pCurrentDir, Usrbuf1,pRootDir);break;
@@ -39,8 +39,8 @@ int main()
 			case 11 : MY_RM(pCurrentDir,Usrbuf1);break;
 			case 12 : MY_MV();break;
 			case 13 : MY_TOUCH(pCurrentDir,Usrbuf1);break;
-			case 14 : MY_SHOWINODE(atoi(Usrbuf1));break;
-			case 15 : MY_SHOWBLOCK(atoi(Usrbuf1));break;
+			case 14 : MY_SHOWINODE(Usrbuf1);break;
+			case 15 : MY_SHOWBLOCK(Usrbuf1);break;
 			case 16 : MY_STATE();break;
 			case 17 : MY_TREE();break;
 			case 18 : return 0;

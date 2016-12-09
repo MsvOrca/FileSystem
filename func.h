@@ -83,8 +83,8 @@ void MY_RMDIR(Dir *pParentDir, char *inp_name);//
 void MY_RM(Dir *nowdir,char name[]);
 void MY_MV();
 void MY_TOUCH(Dir *pndir,char name[]);
-void MY_SHOWINODE(int);
-void MY_SHOWBLOCK(int);
+void MY_SHOWINODE(char*);
+void MY_SHOWBLOCK(char*);
 void MY_STATE();
 void MY_TREE();//
 File_List *PASS_FILELIST_NODE(Dir *Target_dir);
