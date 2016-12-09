@@ -1,11 +1,12 @@
 #include<stdio.h>
 //global virable
 
-char Usrinput[100];
-char Usrcmd[20];
-char Usrbuf1[10];
-char Usrbuf2[10];
-char Usrbuf3[10];
+char Usrinput[125];
+char Usrcmd[25];
+char Usrbuf1[25];
+char Usrbuf2[25];
+char Usrbuf3[25];
+char Usrbuf4[25];
 int CurrentDir_Inumber;//have to fix
 unsigned int sb_inode[16];
 unsigned int sb_block[32];
@@ -70,7 +71,7 @@ int CLASSIFY_INCASE();
 void INSERT(Dir *pParentDir, Dir *pSonDir, Dir *pTmpDir, char *inp_name);
 Dir *MAKEDIR(void);
 void MY_LS(Dir *pParentDir,char *inp_name,char*inp_name2,Dir *RootDir);
-void MY_CAT();
+void MY_CAT(char file1[],char file2[],char link,char targetfile[],Dir *pnowdir);
 void MY_SHOWFILE();
 void MY_PWD(Dir *pRootDir, Dir *pParentDir);//
 Dir *MY_CD(Dir *pParentDir, char *inp_name,Dir *RootDir);//
@@ -101,4 +102,4 @@ int CHECK_INBLOCK(int inblock,int block_num[],FILE *ifp);
 int CHECK_DINBLOCK(Inode I_node,int block_num[],FILE *ifp);
 void STORE_INDIRECT(unsigned long long block_num[],int store,int num_block);
 int *MAKE_BLOCKLIST(int inode_num);
-File *ROADING_FILE(int inode_num,char type);
+File *ROADING_FILE(int inode_num,char type,int blocknum);
