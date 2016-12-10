@@ -6,6 +6,7 @@
 
 int main()
 {
+	CurrentDir_Inumber=0;
 	Dir *pRootDir;
 	Dir *pCurrentDir;
 	pRootDir = (Dir *)malloc(sizeof(Dir));
