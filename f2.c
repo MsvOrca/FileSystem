@@ -456,13 +456,15 @@ void MY_LS(Dir *pParentDir, char *inp_name, char *inp_name2, Dir *RootDir)
 	short x=pParentDir->num_file;
 	pSonDir = pParentDir -> pNextDir;
 	pTmp_File = pParentDir -> pFileData;
-	if((inp_name[0] == '-' && inp_name2 == "\0") || inp_name[0] == 0)
-	{
+	if(inp_name[0] == '-' && inp_name2[0] == '\0')
 		OUTPUT_LIST(pTmp_File, inp_name, inp_name2, x);
-	}
+	else if(inp_name[0] == '\0')
+		OUTPUT_LIST(pTmp_File, inp_name, inp_name2, x);
 	else
 	{	
-		strcpy(inp_name2, inp_name);
+		printf("FL : %c %c\n", inp_name[0], inp_name2[0]);
+		if(inp_name2[0] =='\0')
+			strcpy(inp_name2, inp_name);
 		{
 			pSonDir = MY_CD(pParentDir, inp_name2, RootDir);
 			x = pSonDir -> num_file;
@@ -475,5 +477,4 @@ void MY_LS(Dir *pParentDir, char *inp_name, char *inp_name2, Dir *RootDir)
 void LOAD_DATA()
 {
 	File *head;
-	
 }
