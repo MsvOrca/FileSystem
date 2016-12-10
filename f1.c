@@ -5,29 +5,29 @@
 #include<string.h>
 void USER_INPUT()
 {
-	 int i=0;
-	 scanf("%[^\n]",Usrinput);
-	 getchar();
-	 i=CLASSIFY_INPUT(Usrcmd,i);
-	 i=CLASSIFY_INPUT(Usrbuf1,i);
-	 i=CLASSIFY_INPUT(Usrbuf2,i);
-	 i=CLASSIFY_INPUT(Usrbuf3,i);
-	 CLASSIFY_INPUT(Usrbuf4,i);
+	int i=0;
+	scanf("%[^\n]",Usrinput);
+	getchar();
+	i=CLASSIFY_INPUT(Usrcmd,i);
+	i=CLASSIFY_INPUT(Usrbuf1,i);
+	i=CLASSIFY_INPUT(Usrbuf2,i);
+	i=CLASSIFY_INPUT(Usrbuf3,i);
+	CLASSIFY_INPUT(Usrbuf4,i);
 }
 int CLASSIFY_INPUT(char buf[],int i)
 {
-	 int x=0;
-	 for(;i<125;i++)
-	 {
-		  if(Usrinput[i]==' ' || Usrinput[i]=='\0')
-		  {
-				buf[x]=0;
-				break;
-		  }
-		  buf[x]=Usrinput[i];
-		  x++;
-	 }
-	 return i+1;
+	int x=0;
+	for(;i<125;i++)
+	{
+		if(Usrinput[i]==' ' || Usrinput[i]=='\0')
+		{
+			buf[x]=0;
+			break;
+		}
+		buf[x]=Usrinput[i];
+		x++;
+	}
+	return i+1;
 }
 int CLASSIFY_INCASE()
 {
@@ -91,132 +91,140 @@ void MY_CAT(char file1[],char file2[],char link,char targetfile[],Dir *pnowdir)/
 	 }
 	 fclose(ifp);
 }
-void MY_SHOWFILE(int first, int end, char *Usrbuf3, Dir *pCurrentDir)//
+void MY_SHOWFILE(char *Usrbuf1, char *Usrbuf2, char *Usrbuf3, Dir *pCurrentDir)
 {
-	 FILE *ifp=fopen("mymkfs.bin", "rb");	
+	// 출력하고자 하는 바이트 수가 제대로 입력되었는지 확인
+	
+	int index=0;
+	while(Usrbuf1[index]!='\0')
+	{
+		if(48<=Usrbuf1[index]&&Usrbuf1[index]<=57)
+			;
+		else
+		{
+			printf("오류 : 바이트 수가 잘못 입력되었습니다.\n");
+			return;
+		}
 
-	 int h=0;
-	 int inode_num=0;
-	 _Bool ForD=0;
-	 int block_num [18528];                         // 한 개의 파일이 가질 수 있는 최대 블록 개수 : 96x96 + 96 + 1 = 18528
-	 char data[128]={0};
+		index++;
+	}
 
-	 short direct;
-	 short single;
-	 short double_indirect;
+	index=0;
+	while(Usrbuf2[index]!='\0')
+	{
+		if(48<=Usrbuf2[index]&&Usrbuf2[index]<=57)
+			;
+		else
+		{
+			printf("오류 : 바이트 수가 잘못 입력되었습니다.\n");
+			return;
+		}
 
-	 unsigned long long indirectinode[16]={0};      // 데이터 블록 번호 패킹
-	 unsigned long long indirectinode2[16]={0};
+		index++;
+	}
 
-	 int i=0x3FF;                                   // 000...0011 1111 1111
+	// 제대로 입력되었다면 atoi()를 사용해 숫자로 변환
+	
+	int first = atoi(Usrbuf1);
+	int end   = atoi(Usrbuf2);
 
-	 File_List *showfile;
+	// 마지막 바이트가 처음 바이트보다 크다면 오류 메시지 출력
+	
+	if(first>end)
+	{
+		printf("오류 : 바이트 수가 잘못 입력되었습니다.\n");
+		return;
+	}
+	
 
-	 Inode I_node={0};
+	FILE *ifp=fopen("mymkfs.bin", "rb");	
 
+	File_List *showfile=NULL;
+	Inode *I_node=NULL;
 
-	 // 파일 찾기
-
-	 showfile=CMPNAME(pCurrentDir, Usrbuf3, 'x');
-
-	 if(showfile==NULL)
-		  printf("오류 : 해당 파일을 찾을 수가 없습니다.\n");
-	 else
-	 {
-		  inode_num=showfile->Inode_Num;
-
-		  fseek(ifp, 2+64+128+(32*inode_num), 0);
-		  fread(&I_node, 32, 1, ifp);
-
-
-		  // 다이렉트 블록
-
-		  block_num[0]=I_node.direct;
-
-
-		  // 싱글 인다이렉트 블록
-
-		  if(single!=1024)
-		  {
-				fseek(ifp, 2+64+128+(32*512)+(128*single), 0);
-				fread(indirectinode, sizeof(unsigned long long), 16, ifp);
+	int inode_num=0;
+	int block_num=0;
 
 
-				for(h=1; h<96; h++)
+	// 지정된 파일의 이름과 같은 이름을 갖는 파일의 존재 여부 확인
+
+	showfile=CMPNAME(pCurrentDir, Usrbuf3, 'x');
+
+	if(showfile==NULL)                                         // 동일한 이름의 파일이 존재하지 않을 떄
+		printf("오류 : 해당 파일을 찾을 수가 없습니다.\n");    
+	else                                                       // 존재할 때
+	{
+		// 지정된 파일의 아이노드 번호 저장
+		
+		inode_num=showfile->Inode_Num;
+
+		
+		// 아이노드 정보를 읽어와 저장
+		
+		I_node=GOTOINODE(inode_num, 'r', ifp);
+
+
+		// 데이터가 저장된 블록의 개수 연산
+		
+		int file_size=I_node->File_size;
+
+		if((file_size%128) != 0)
+			block_num=(file_size/128)+1;
+		else
+			block_num=file_size/128;
+		
+
+		// 지정된 파일이 저장된 데이터블록으로 부터 데이터를 읽어와 저장
+		
+		File *head=NULL;
+		
+		if(I_node->ForD==0)    // 일반 파일인 경우
+			head=ROADING_FILE(inode_num, 'x', block_num);
+
+		else                   // 디렉토리 파일인 경우
+			head=ROADING_FILE(inode_num, 'd', block_num);
+
+
+		// 파일 출력
+		
+		for(int i=0; i<block_num; i++)
+		{
+			printf("%s", head->file_type.file);
+			head=head->Next;
+		}
+
+		// 지정된 바이트 부터 바이트 까지의 데이터 출력
+
+		/*
+		for(int i=first/128; i<end/128; i++)
+		{
+			fseek(ifp, 128+64+128+(32*512)+128*(block_num[i]-131), 0);
+			fread(data, sizeof(char), 128, ifp);
+			if(i!=end/128)
+			{
+				for(int i=first%128; i<128; i++)
 				{
-					 block_num[h]=(indirectinode[h/6]>>((h%6)*10))&i;
-
-					 if(block_num[h]==0)
-						  break;
-
-					 h=h-1;                   
+					if(data[i]='\0')
+						return;
+					else
+						printf("%c", data[i]);
 				}
-		  }
-
-		  // 더블 인다이렉트 블록
-
-		  if(double_indirect!=1024)
-		  {
-				fseek(ifp, 2+64+128+(32*512)+(128*double_indirect), 0);
-				fread(indirectinode, sizeof(unsigned long long), 16, ifp);
-
-				int j=0;  
-				int block_num1[96]={0};
-
-				for(j=0; j<96; j++)
+			}
+			else
+			{
+				for(int i=0; i<end%128; i++)
 				{
-					 block_num1[j]=(indirectinode[j/6]>>((j%6)*10))&i;
-
-					 if(block_num1[j]==0)
-						  break;
+					if(data[i]='\0')
+						return;
+					else
+						printf("%c", data[i]);
 				}
-				for(int k=0; k<j; k++)
-				{
-					 fseek(ifp, 2+64+128+(32*512)+(128*block_num1[k]), 0);
-					 fread(indirectinode2, sizeof(unsigned long long), 16, ifp);
-
-					 for(; h<18528; h++)
-					 {
-						  block_num[h]=(indirectinode2[h/6]>>((h%6)*10))&i;
-
-						  if(block_num[h]==0)
-								break;
-					 }
-				}
-		  }
-
-
-		  // 지정된 바이트 부터 바이트 까지의 데이터 출력
-
-		  for(int i=first/128; i<end/128; i++)
-		  {
-				fseek(ifp, 128+64+128+(32*512)+128*(block_num[i]-131), 0);
-				fread(data, sizeof(char), 128, ifp);
-
-				if(i!=end/128)
-				{
-					 for(int i=first%128; i<128; i++)
-					 {
-						  if(data[i]='\0')
-								return;
-						  else
-								printf("%c", data[i]);
-					 }
-				}
-				else
-				{
-					 for(int i=0; i<end%128; i++)
-					 {
-						  if(data[i]='\0')
-								return;
-						  else
-								printf("%c", data[i]);
-					 }
-				}
-		  }
-	 }
-	 return;
+			}
+		}*/
+	}
+	return;
 }
+
 
 
 
@@ -546,7 +554,8 @@ void MY_SHOWINODE(char *Usrbuf1)
 		  }
 
 
-		  // 사용중인 아이노드의 번호가 지정되었다면 지정된 번호의 아이노드 출력
+
+		// 사용중인 아이노드의 번호가 지정되었다면 지정된 번호의 아이노드 출력
 
 		  else
 		  {
@@ -614,72 +623,73 @@ void MY_SHOWINODE(char *Usrbuf1)
 
 void MY_SHOWBLOCK(char *Usrbuf1)
 {
-	 // 데이터블록의 번호가 제대로 입력되었는지 확인
+	// 데이터블록의 번호가 제대로 입력되었는지 확인
 
-	 int index=0;  
-	 while(Usrbuf1[index]!='\0')
-	 {
-		  if(48<=Usrbuf1[index]&&Usrbuf1[index]<=57)
-				;
-		  else
-		  {
-				printf("오류 : 아이노드의 번호를 다시 입력해주십시오.\n");
-				return;
-		  }
+	int index=0;  
+	while(Usrbuf1[index]!='\0')
+	{
+		if(48<=Usrbuf1[index]&&Usrbuf1[index]<=57)
+			;
+		else
+		{
+			printf("오류 : 아이노드의 번호를 다시 입력해주십시오.\n");
+			return;
+		}
 
-		  index++;
-	 }
+		index++;
+	}
 
-	 // 0을 포함한 양수의 숫자가 입력되었다면 atoi를 사용해 저장
+	// 0을 포함한 양수의 숫자가 입력되었다면 atoi를 사용해 저장
 
-	 int a=atoi(Usrbuf1);
-
-
-	 // 데이터블록의 번호가 제대로 입력되었는지 확인
-
-	 if(0<=a&&a<=1023)
-	 {
-		  FILE *ifp=fopen("mymkfs.bin", "rb");
-
-		  //Inode I_node={0};                          // 아이노드 -> 지워도 되는건가?
-
-		  unsigned long long indirectinode[16]={0};    // 인다이렉트아이노드 -> 할지 안할지 아직 안 정함
-		  char data[128]={0};                          // 일반 데이터
+	int a=atoi(Usrbuf1);
 
 
-		  // 데이터블록 사용여부 체크
+	// 데이터블록의 번호가 제대로 입력되었는지 확인
 
-		  fseek(ifp, 2+64, 0);
-		  fread(sb_block, sizeof(unsigned int), 32, ifp);
+	if(0<=a&&a<=1023)
+	{
+		FILE *ifp=fopen("mymkfs.bin", "rb");
 
-		  int i=1;
-		  int check=0;
+		//Inode I_node={0};                          // 아이노드 -> 지워도 되는건가?
 
-		  if((sb_block[a/32]&(i<<=(a%32)))==0)
-		  {
-				printf("사용중인 데이터블록이 아닙니다.\n");
-				return;
-		  }
+		unsigned long long indirectinode[16]={0};    // 인다이렉트아이노드 -> 할지 안할지 아직 안 정함
+		char data[128]={0};                          // 일반 데이터
 
 
-		  // 사용중인 데이터블록의 번호가 입력되었다면 저장된 데이터 출력
+		// 데이터블록 사용여부 체크
 
-		  else
-		  {
-				fseek(ifp, 2+64+128+sizeof(Inode)*512+128*(a), 0);
-				fread(data, sizeof(char), 128, ifp);
+		fseek(ifp, 2+64, 0);
+		fread(sb_block, sizeof(unsigned int), 32, ifp);
 
-				if(1)                   // 인다이렉트 아이노드인지 데이터인지 판별 -> 할지 안할지 아직 안 정함
-					 printf("%s\n", data);
-				else
-					 printf("INDIRECT INODE\n");
-				fclose(ifp);
-		  }
+		int i=1;
+		int check=0;
 
-	 }
-	 else
-		  printf("오류 : 입력 가능한 데이터블록의 번호는 0번부터 1023번까지 입니다.\n");
-	 return;
+		if((sb_block[a/32]&(i<<=(a%32)))==0)
+		{
+			printf("사용중인 데이터블록이 아닙니다.\n");
+			return;
+		}
+
+
+		// 사용중인 데이터블록의 번호가 입력되었다면 저장된 데이터 출력
+
+		else
+		{
+			fseek(ifp, 2+64+128+sizeof(Inode)*512+128*(a), 0);
+			fread(data, sizeof(char), 128, ifp);
+
+			if(1)                   // 인다이렉트 아이노드인지 데이터인지 판별 -> 할지 안할지 아직 안 정함
+				printf("%s\n", data);
+			else
+				printf("INDIRECT INODE\n");
+		}
+
+	}
+	else
+		printf("오류 : 입력 가능한 데이터블록의 번호는 0번부터 1023번까지 입니다.\n");
+
+	return;
+
 }
 
 // 데이터
@@ -784,20 +794,23 @@ void MAKEFILE(int Inode_Num,char fname[],Dir *Target_Dir, _Bool F_D,int fsize)//
 
 	 //parent direct have to increase size;
 }
-Inode *GOTOINODE(int a,char mode, FILE* ifp)
+Inode *GOTOINODE(int a,char mode, FILE* ifp)     // a : 아이노드 번호, mode : ???, ifp : 아이노드 정보를 읽어올 파일(파일시스템)
 {
 
-	 Inode *I_node;
-	 I_node=(Inode*)calloc(1,sizeof(Inode));
+	// 지정된 번호의 아이노드 정보 저장
+	
+	Inode *I_node;
 
-	 // 지정된 번호의 아이노드 출력
+	I_node=(Inode*)calloc(1,sizeof(Inode));
 
-	 fseek(ifp, 2+64+128+sizeof(Inode)*a, 0);  // 0,1,2번의 데이터블록의 크기 : 128, 64, 128
-	 if(mode=='r')
-		  fread(I_node, sizeof(Inode), 1, ifp);
-	 else
-		  free(I_node);
-	 return I_node;
+	fseek(ifp, 2+64+128+sizeof(Inode)*a, 0);  
+
+	if(mode=='r')
+		fread(I_node, sizeof(Inode), 1, ifp);
+	else
+		free(I_node);
+
+	return I_node;
 }
 File *GOTOBLOCK(int blocknum,char type,char mode, FILE* ifp)
 {
@@ -971,43 +984,73 @@ File_List *CMPNAME(Dir *pndir, char name[],char prev)
 	 }
 	 return NULL;
 }
-int CHECK_INBLOCK(int inblock,int block_num[],FILE *ifp)
+int CHECK_INBLOCK(int inblock,int block_num[],FILE *ifp)  // inblock : 싱글 인다이렉트 블록의 넘버, block_num[] : 언패킹하여 얻은 블록 넘버들을 저장할 배열
 {
-	 unsigned long long indirectinode[16]={0};
-	 int point_num=0;
-	 fseek(ifp,0,0);
-	 fseek(ifp,2+64+128+sizeof(Inode)*512+128*(inblock),0);
-	 fread(indirectinode, sizeof(unsigned long long),16,ifp);
-	 int i=0x3FF;
-	 unsigned long long j=0;
-	 for(j=0;j<96;j++)
-	 {
-		  point_num++;
-		  block_num[j]=(indirectinode[j/6]>>((j%6)*10))&i;
-		  if(block_num[j]==0)
-				break;
+	// 지정된 싱글 인다이렉트 블록의 값을 읽어와 저장
+	
+	unsigned long long indirectinode[16]={0};
 
-	 }
-	 return point_num;
+	fseek(ifp,2+64+128+sizeof(Inode)*512+128*(inblock),0);
+	fread(indirectinode, sizeof(unsigned long long),16,ifp);
+
+	
+	// 싱글 인다이렉트 블록을 언패킹하여 블록 넘버들 저장
+	
+	int i=0x3FF;
+	int point_num=0;
+	unsigned long long j=0;
+
+	for(j=0;j<96;j++)
+	{
+		//point_num++;     
+		block_num[j]=(indirectinode[j/6]>>((j%6)*10))&i;
+
+		if(block_num[j]==0)  // 저장된 블록의 넘버가 '0'이라면 더 이상 읽지 않는다.
+			break;
+
+		point_num++; 
+	}
+
+
+	// 싱글 인다이렉트 블록을 언패킹하여 나온 다이렉트 블록 넘버들의 개수 리턴
+
+	return point_num;    
 }
 int CHECK_DINBLOCK(Inode I_node,int block_num[],FILE *ifp)//테스트 필요
 {
-	 fseek(ifp, 0, 0);
-	 unsigned long long indirectinode[16]={0};
-	 fseek(ifp, 2+64+128+sizeof(Inode)*512+128*(I_node.double_indirect), 0);
-	 fread(indirectinode, sizeof(unsigned long long), 16, ifp);
+	// 지정된 더블 인다이렉트 블록의 값을 읽어와 저장
+	
+	unsigned long long indirectinode[16]={0};
 
-	 int i=0x3FF; // 000...0011 1111 1111
-	 unsigned long long j=0;  
-	 int iblock_num[96]={0};
-	 int z;
-	 z=CHECK_INBLOCK(I_node.double_indirect,iblock_num,ifp);
-	 int a=0;
-	 for(int k=0; k<z; k++)
-	 {
-		  a+=CHECK_INBLOCK(iblock_num[k],&block_num[a],ifp);
-	 }
-	 return a;
+	fseek(ifp, 2+64+128+sizeof(Inode)*512+128*(I_node.double_indirect), 0);
+	fread(indirectinode, sizeof(unsigned long long), 16, ifp);
+
+
+	// 더블 인다이렉트 블록을 언패킹하여 블록 넘버들 저장
+
+	int i=0x3FF;
+	int z=0;
+	int a=0;
+	int iblock_num[96]={0};
+
+	//unsigned long long j=0;  지워도 될 것 같은데?
+
+	// 더블 인다이렉트 블록을 언패킹하여 싱글 인다이렉트 블록들의 넘버들 저장
+	
+	z=CHECK_INBLOCK(I_node.double_indirect,iblock_num,ifp);
+
+
+	// 구한 싱글 인다이렉트 블록들을 언패킹하여 다이렉트 블록들의 넘버들 저장
+	
+	for(int k=0; k<z; k++)
+	{
+		a+=CHECK_INBLOCK(iblock_num[k],&block_num[a],ifp);
+	}
+
+
+	// 더블 인다이렉트 블록을 언패킹하여 나온 다이렉트 블록 넘버들의 개수 리턴
+	
+	return a;
 }
 void STORE_INDIRECT(unsigned long long block_num[], int store,int num_block)
 {
@@ -1031,55 +1074,92 @@ void STORE_INDIRECT(unsigned long long block_num[], int store,int num_block)
 }
 int *MAKE_BLOCKLIST(int inode_num)
 {
-	 FILE *ifp;
-	 ifp=fopen("mymkfs.bin","rb");
-	 Inode *temp_inode;
-	 temp_inode=GOTOINODE(inode_num,'r',ifp);
-	 int blocknum,inblocknum;
-	 blocknum = temp_inode->File_size/128;
-	 if(temp_inode->File_size%128>0)
-		  blocknum++;
-	 int *blocklist;
-	 int templist[1023];
-	 blocklist=(int*)calloc(blocknum,sizeof(int));
-	 blocklist[0]=temp_inode->direct;
-	 if(blocknum>1)
-	 {
-		  if(blocknum+1<=97)
-		  {
-				inblocknum=blocknum;
-				CHECK_INBLOCK(temp_inode->indirect,&templist[1],ifp);
-		  }
-		  else
-		  {
-				inblocknum=96;
-				CHECK_INBLOCK(temp_inode->indirect,&templist[1],ifp);
-				CHECK_DINBLOCK(*temp_inode,&templist[inblocknum+1],ifp);
-		  }
-	 }
-	 fclose(ifp);
-	 for(int x=1;x<blocknum;x++)
-	 {
-		  blocklist[x]=templist[x];
-		  printf("block %d",blocklist[x]);
-	 }
-	 return blocklist;
+
+	// 파일 오픈
+
+	FILE *ifp;
+	ifp=fopen("mymkfs.bin","rb");
+
+
+	// 아이노드 정보를 읽어와 저장
+	
+	Inode *temp_inode;
+	temp_inode=GOTOINODE(inode_num,'r',ifp);
+
+
+	// 필요한 블록 개수 계산 & 블록 정보를 읽어와 저장
+	
+	int blocknum,inblocknum;
+	int *blocklist;
+	int templist[1023];
+
+	blocknum = temp_inode->File_size/128;
+
+
+	if(temp_inode->File_size%128>0)
+		blocknum++;
+
+	blocklist=(int*)calloc(blocknum,sizeof(int));
+
+	blocklist[0]=temp_inode->direct;
+
+	if(blocknum>1)
+	{
+		if(blocknum+1<=97)             // 인다이렉트 블록이 사용중일 때
+		{
+			inblocknum=blocknum;
+			CHECK_INBLOCK(temp_inode->indirect,&templist[1],ifp);
+		}
+		else                           // 싱글&더블 인다이렉트 블록이 사용중일 때
+		{
+			inblocknum=96;             
+			CHECK_INBLOCK(temp_inode->indirect,&templist[1],ifp);
+			CHECK_DINBLOCK(*temp_inode,&templist[inblocknum+1],ifp);
+		}
+	}
+	fclose(ifp);
+
+
+	// 블록넘버가 저장된 리스트 생성
+
+	for(int x=1;x<blocknum;x++)
+	{
+		blocklist[x]=templist[x];
+//				  printf("block %d\n",blocklist[x]);
+	}
+
+	return blocklist;
+
 }
 
 File *ROADING_FILE(int inode_num,char type,int blocknum)
 {
-	 FILE *ifp=fopen("mymkfs.bin","rb");
-	 int *blocklist= MAKE_BLOCKLIST(inode_num);
-	 File *head,*temp;
-	 head=(File*)calloc(1,sizeof(File));
-	 head=GOTOBLOCK(blocklist[0],type,'r',ifp);
-	 temp=head;
-	 for(int x=1;x<blocknum;x++)
-	 {
-		  printf("%d\n",(int)blocklist[x]);
-		  temp->Next=GOTOBLOCK(blocklist[x],type,'r',ifp);
-		  temp=temp->Next;
-	 }
-	 temp->Next=NULL;
-	 return head;
+
+	// 파일 오픈
+	
+	FILE *ifp=fopen("mymkfs.bin","rb");
+
+
+	// 지정된 아이노드를 갖는 파일의 데이터가 저장된 블록 넘버들의 리스트 생성
+
+	int *blocklist= MAKE_BLOCKLIST(inode_num);
+
+
+	// 파일의 데이터들의 링크드리스트 구현
+
+	File *head,*temp;
+
+	head=(File*)calloc(1,sizeof(File));
+	head=GOTOBLOCK(blocklist[0],type,'r',ifp);
+
+	temp=head;
+	for(int x=1;x<blocknum;x++)
+	{
+//		printf("%d\n",(int)blocklist[x]);
+				  temp->Next=GOTOBLOCK(blocklist[x],type,'r',ifp);
+				  temp=temp->Next;
+	}
+	temp->Next=NULL;
+	return head;
+
 }

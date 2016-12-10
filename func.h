@@ -72,7 +72,7 @@ int INSERT(Dir *pParentDir, Dir *pSonDir, Dir *pTmpDir, char *inp_name);
 Dir *MAKEDIR(void);
 void MY_LS(Dir *pParentDir,char *inp_name,char*inp_name2,Dir *RootDir);
 void MY_CAT(char file1[],char file2[],char link,char targetfile[],Dir *pnowdir);
-void MY_SHOWFILE();
+void MY_SHOWFILE(char *, char *, char *, Dir *);
 void MY_PWD(Dir *pRootDir, Dir *pParentDir);//
 Dir *MY_CD(Dir *pParentDir, char *inp_name,Dir *RootDir);//
 void MY_CP();
