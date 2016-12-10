@@ -144,6 +144,7 @@ void MY_SHOWFILE(char *Usrbuf1, char *Usrbuf2, char *Usrbuf3, Dir *pCurrentDir)
 	int inode_num=0;
 	int block_num=0;
 
+
 	// 지정된 파일의 이름과 같은 이름을 갖는 파일의 존재 여부 확인
 
 	showfile=CMPNAME(pCurrentDir, Usrbuf3, 'x');
