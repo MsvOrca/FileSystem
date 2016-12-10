@@ -97,12 +97,12 @@ Dir *RELATIVE_PATH(Dir *pParentDir, char *pDir, Dir *pRootDir)
 	char Tmp_name[4];
 	Dir *pSonDir;
 	pSonDir = (Dir *)malloc(sizeof(Dir));
-	pSonDir = pParentDir;
+	pSonDir = pParentDir; 
 	int x=0;
 	int i = 0;
+	int cnt = 0;
 	while(1)
 	{
-		printf("ROOT: %s\n", pRootDir -> name);
 		x = 0;
 		while(i < 30)
 		{
@@ -110,7 +110,6 @@ Dir *RELATIVE_PATH(Dir *pParentDir, char *pDir, Dir *pRootDir)
 			if(pDir[i]=='/' || pDir[i] == '\0')
 			{
 				Tmp_name[x] = 0;
-				printf("INPUT LETTER :%c\n", pDir[i]);
 				if(pDir[i]=='/' || pDir[i] == '\0')
 				{
 					Tmp_name[x] = 0;
@@ -142,26 +141,27 @@ Dir *RELATIVE_PATH(Dir *pParentDir, char *pDir, Dir *pRootDir)
 				pSonDir = pRootDir;
 		}
 		else
+		{
 			while(1)
 			{
+				if(pSonDir -> pNextDir == NULL && pDir[i] != '\0')
+					return NULL;
+				pSonDir = pSonDir -> pNextDir;
 				if(strcmp(pSonDir -> name, Tmp_name) == 0)
 				{
 					if(pSonDir -> pNextDir != NULL)
 					{
-						printf("1\n");
-						pSonDir = pSonDir -> pNextDir;
+						break;
 					}
 					else
 						if(pDir[i] == '\0')
 							return pSonDir;
 						else
 							return NULL;
-					break;
 				}
 				else
 					if(pSonDir -> pSimilDir != NULL)
 					{
-						printf("2\n");
 						pSonDir = pSonDir -> pSimilDir;
 					}
 					else
@@ -169,9 +169,8 @@ Dir *RELATIVE_PATH(Dir *pParentDir, char *pDir, Dir *pRootDir)
 						return NULL;
 					}
 			}
+		}
 	}
-	if(pSonDir -> pNextDir == NULL)
-		return NULL;
 }
 Dir *ABSOLUTE_PATH(Dir *RootDir, char *pDir)
 {
@@ -256,8 +255,8 @@ int INSERT(Dir *pParentDir, Dir *pSonDir, Dir *pTmpDir, char *inp_name)
 			pSonDir = pSonDir -> pSimilDir;
 		}
 		pSonDir -> pSimilDir = pTmpDir;
-		pSonDir->inode_num=i;
 	}
+	pTmpDir->inode_num=i;
 	MAKEFILE(i,inp_name,pParentDir,1,2);
 	File_List *pPdir,*pNdir;
 	pPdir=(File_List*)calloc(1,sizeof(File_List));
@@ -311,6 +310,7 @@ Dir *MY_CD(Dir *pParentDir, char *inp_name, Dir *RootDir)
 		pParentDir = pSonDir = RootDir;
 	else if(inp_name[0] == '.')
 	{
+		pSonDir = pParentDir;
 		pSonDir = RELATIVE_PATH(pSonDir, inp_name, RootDir);
 		if(pSonDir != NULL)
 			pParentDir = pSonDir;
@@ -322,34 +322,16 @@ Dir *MY_CD(Dir *pParentDir, char *inp_name, Dir *RootDir)
 			if(strcmp(pSonDir -> name, inp_name) == 0)
 			{
 				pParentDir = pSonDir;
-			}
-			else if(inp_name[0] == '/' && inp_name[1] == '\0')
-				pParentDir = pSonDir = RootDir;
-			else if(inp_name[0] == '.')
-			{
-				pSonDir = RELATIVE_PATH(pParentDir, inp_name, RootDir);
-				if(pSonDir != NULL)
-					pParentDir = pSonDir;
+			return pParentDir;
 			}
 			else
-			{
-				while(pSonDir != NULL)
-				{
-					if(strcmp(pSonDir -> name, inp_name) == 0)
-					{
-						pParentDir = pSonDir;
-						return pParentDir;
-					}
-					else
-						pSonDir = pSonDir -> pSimilDir;
-				}
-			}
-			if(pSonDir == NULL)
-				printf("No Directory Found\n");
-			CurrentDir_Inumber=pParentDir->inode_num;
-			return pParentDir;
+				pSonDir = pSonDir -> pSimilDir;
 		}
 	}
+	CurrentDir_Inumber=pParentDir->inode_num;
+	if(pSonDir == NULL)
+		printf("No Directory Found\n");
+	return pParentDir;
 }
 void MY_MKDIR(Dir *pParentDir, char *inp_name)
 {
@@ -462,7 +444,6 @@ void MY_LS(Dir *pParentDir, char *inp_name, char *inp_name2, Dir *RootDir)
 		OUTPUT_LIST(pTmp_File, inp_name, inp_name2, x);
 	else
 	{	
-		printf("FL : %c %c\n", inp_name[0], inp_name2[0]);
 		if(inp_name2[0] =='\0')
 			strcpy(inp_name2, inp_name);
 		{
