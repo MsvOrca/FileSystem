@@ -15,6 +15,18 @@ int main()
 	pRootDir -> pPrevDir = NULL;
 	strcpy(pRootDir -> name, "ROOT");
 	pCurrentDir = pRootDir;
+
+	// 파일시스템의 존재 여부 확인
+
+	FILE *ifp=fopen("mymkfs.bin", "r");
+	if(ifp==NULL)
+	{
+		printf("오류 : 파일시스템이 존재하지 않습니다.\n");
+		return 0;
+	}
+
+	// 파일시스템이 존재한다면 쉘 생성
+	
 	while(1)
 	{
 		int INcase=0;
@@ -28,7 +40,7 @@ int main()
 		{
 			case 1 : MY_LS(pCurrentDir,Usrbuf1,Usrbuf2,pRootDir);break;
 			case 2 : MY_CAT(Usrbuf1,Usrbuf2,Usrbuf3[0],Usrbuf4,pCurrentDir);break;
-			case 3 : MY_SHOWFILE();break;
+			case 3 : MY_SHOWFILE(Usrbuf1, Usrbuf2, Usrbuf3, pCurrentDir);break;
 			case 4 : MY_PWD(pRootDir, pCurrentDir);printf("\n");break;
 			case 5 : pCurrentDir = MY_CD(pCurrentDir, Usrbuf1,pRootDir);break;
 			case 6 : MY_CP();break;
