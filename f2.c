@@ -3,7 +3,7 @@
 #include<time.h>
 #include<stdlib.h>
 #include<string.h>
-//fixed it
+///fixed it
 void INPUT_TIME(Inode *test){
 	 struct tm *t;
 	 time_t timer;

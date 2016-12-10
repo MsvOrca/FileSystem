@@ -174,7 +174,7 @@ void MY_SHOWFILE(char *Usrbuf1, char *Usrbuf2, char *Usrbuf3, Dir *pCurrentDir)
 			block_num=file_size/128;
 		
 
-		// 지정된 파일이 저장된 데이터블록으로 부터 데이터를 읽어와 저장
+		/// 지정된 파일이 저장된 데이터블록으로 부터 데이터를 읽어와 저장
 		
 		File *head=NULL;
 		
