@@ -73,7 +73,7 @@ void main(void)
 		sb_block[0]=1;
 
 		I_node[0].ForD=1;
-		I_node[0].File_size=2;
+		I_node[0].File_size=16;
 		I_node[0].direct=0;
 		I_node[0].single=1024;
 		I_node[0].double_indirect=1024;
@@ -138,3 +138,4 @@ void INPUT_TIME(Inode *test){
 
 	return;
 }
+
