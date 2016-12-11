@@ -55,27 +55,34 @@ void OUTPUT_TIME(File_List *pFileData)
 		printf("0");
 	printf("%d", Tmp_Inode -> Timed.sec);
 }
-void MY_TREE(Dir *pRootDir)
+void MY_TREE(Dir *pParentDir, Dir *pRootDir, char *inp_name)
 {
 	Dir *pSonDir;
 	pSonDir = (Dir *)malloc(sizeof(Dir));
-	pSonDir = pRootDir -> pNextDir;
+	pSonDir = pParentDir -> pNextDir;
 	int cnt = 0;
-	printf("/\n");
+	if(inp_name != NULL)
+		pSonDir = MY_CD(pParentDir, inp_name, pRootDir);
+	if(strcmp(pSonDir -> name, "ROOT") == 0)
+		printf("/\n");
+	else
+		printf("%s\n", pSonDir -> name);
 	while(1)
 	{
+		if(pSonDir == NULL)
+			return ;
 		printf("--");
 		for(int a = 0; a < cnt; a++)
 			printf("---");
 		printf("* %s\n", pSonDir -> name);
 		if(pSonDir -> pNextDir == NULL && pSonDir -> pSimilDir == NULL)
 		{
-			while(pSonDir -> pPrevDir -> pSimilDir != NULL || pSonDir -> pPrevDir != pRootDir)
+			while(pSonDir -> pPrevDir -> pSimilDir != NULL || pSonDir -> pPrevDir != pParentDir)
 			{
 				pSonDir = pSonDir -> pPrevDir;
 				cnt--;
 			}
-			if(pSonDir -> pPrevDir == pRootDir && pSonDir -> pSimilDir == NULL)
+			if(pSonDir -> pPrevDir == pParentDir && pSonDir -> pSimilDir == NULL)
 			{
 				return;
 			}

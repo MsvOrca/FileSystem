@@ -86,7 +86,7 @@ void MY_TOUCH(Dir *pndir,char name[]);//ok  problem is file more than 4
 void MY_SHOWINODE(char*);//ok
 void MY_SHOWBLOCK(char*);//ok
 void MY_STATE();//ok
-void MY_TREE(Dir *pRootDir);//ok
+void MY_TREE(Dir *pParentDir, Dir *pRootDir, char *inp_name);//ok
 File_List *PASS_FILELIST_NODE(Dir *Target_dir);
 void MAKEFILE(int Inode_Num,char fname[],Dir *Target_Dir,_Bool F_D,int fsize);
 int INODECHECK();
