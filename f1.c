@@ -131,7 +131,6 @@ void MY_CP(char source_file[],char dest_file[],Dir *pndir)
 					 unsigned long long file_dinblock[need_dinblock];
 					 memset(file_dinblock,0,need_dinblock);
 					 //블록배정
-
 					 nownode->direct=(short)BLOCKCHECK();
 					 CHANGE_SBBLOCK((int)nownode->direct,ifp);
 					 if(need_inblock==0)
@@ -167,21 +166,22 @@ void MY_CP(char source_file[],char dest_file[],Dir *pndir)
 					 }
 					 //블록에다 쓰기
 
+printf("aaaa\n");
 					 if(need_inblock>0)
 					 {
 						  if(need_dinblock<0)
-								STORE_INDIRECT(&file_block[1],(int)nownode->indirect,need_inblock);
+								STORE_INDIRECT(&file_block[1],(int)nownode->indirect);
 						  else
-								STORE_INDIRECT(&file_block[1],(int)nownode->indirect,96);
+								STORE_INDIRECT(&file_block[1],(int)nownode->indirect);
 					 }
 					 if(need_dinblock>0)
 					 {
 						  file_dinblock[need_dinblock]=0;
-						  STORE_INDIRECT(file_dinblock,(int)nownode->double_indirect,need_dinblock+1);
+						  STORE_INDIRECT(file_dinblock,(int)nownode->double_indirect);
 						  for(int x=0;x<need_dinblock;x++)
 						  {
 								file_block[blocknum]=0;
-								STORE_INDIRECT(&file_block[97+96*x],(int)file_dinblock[x],96);
+								STORE_INDIRECT(&file_block[97+96*x],(int)file_dinblock[x]);
 						  }
 					 }
 					 File *ftemp=nowfile;
@@ -225,12 +225,12 @@ void MY_CP(char source_file[],char dest_file[],Dir *pndir)
 	 else
 		  printf("mycp: missing file operand\n");
 }
-void MY_CPTO(char My_Source_File[],char Dest_File[])
+void MY_CPTO(char My_Source_File[],char Dest_File[],Dir *nowdir)
 {
 	 FILE *dest_file;
-	 dest_file=fopen(Dest_File,"a");
-	 fseek(dest_file,0,SEEK_END);
-	 if(ftell(dest_file)>0)
+	 dest_file=fopen(Dest_File,"w");
+//	 fseek(dest_file,0,SEEK_END);
+	/* if(ftell(dest_file)>0)
 	 {
 		  char a;
 		  printf("이미 파일이 존재합니다. 덮어쓰시겠습니까?[y/n]\n");
@@ -242,10 +242,32 @@ void MY_CPTO(char My_Source_File[],char Dest_File[])
 				fclose(dest_file);
 				return;
 		  }
-		  //파일구조체 로드
+*/
+char tempname[5]={0,};
+strncpy(tempname,My_Source_File,4);
+		  File_List *source=CMPNAME(nowdir,tempname,'n');
+		  if(source!=NULL)
+		  {
+				FILE *ifp=fopen("mymkfs.bin","rb");
+		  Inode *sourcenode=GOTOINODE(source->Inode_Num,'r',ifp);
+		  int blocknum= sourcenode->File_size/128;
+		  if(sourcenode->File_size%128>0)
+				blocknum++;
+		  File *a,*temp;
+		  a=LOADING_FILE(source->Inode_Num,'f',blocknum);
+		  temp=a;
+		  for(int x=0;x<blocknum;x++)
+		  {
+				fprintf(dest_file,"%s",temp->file_type.file);
+				temp=temp->Next;
+		  }
+		  fclose(dest_file);
+		  }
+		  else
+				printf("파일이 존재하지 않습니다.\n");
 
 
-	 }
+//	 }
 }
 void MY_CPFROM(char Source_File[],char My_Dest_File[],Dir *nowdir)
 {
@@ -334,18 +356,18 @@ void MY_CPFROM(char Source_File[],char My_Dest_File[],Dir *nowdir)
 		  if(need_inblock>0)
 		  {
 				if(need_dinblock<0)
-					 STORE_INDIRECT(&file_block[1],(int)new_inode.indirect,need_inblock);
+					 STORE_INDIRECT(&file_block[1],(int)new_inode.indirect);
 				else
-					 STORE_INDIRECT(&file_block[1],(int)new_inode.indirect,96);
+					 STORE_INDIRECT(&file_block[1],(int)new_inode.indirect);
 		  }
 		  if(need_dinblock>0)
 		  {
 				file_dinblock[need_dinblock]=0;
-				STORE_INDIRECT(file_dinblock,(int)new_inode.double_indirect,need_dinblock+1);
+				STORE_INDIRECT(file_dinblock,(int)new_inode.double_indirect);
 				for(int x=0;x<need_dinblock;x++)
 				{
 					 file_block[need_block]=0;
-					 STORE_INDIRECT(&file_block[97+96*x],(int)file_dinblock[x],96);
+					 STORE_INDIRECT(&file_block[97+96*x],(int)file_dinblock[x]);
 				}
 		  }
 		  for(int x=0;x<need_block-1;x++)
@@ -445,7 +467,8 @@ void MY_RM(Dir *nowdir,char name[])
 		  GOTOINODE(Target_inode,'w',ifp);
 		  Inode tmp={0};
 		  fwrite(&tmp,sizeof(Inode),0,ifp);
-		  fclose(ifp);
+		  RM_SDIR(nowdir,name);
+				fclose(ifp);
 	 }
 	 else
 		  printf("myrm : cannot remove '%s' : No such file or directory\n",name);
@@ -732,7 +755,7 @@ void MAKEFILE(int Inode_Num,char fname[],Dir *Target_Dir, _Bool F_D,int fsize)//
 
 	 File_List *New_filelist;
 	 New_filelist=(File_List*)calloc(1,sizeof(File_List));
-	 strcpy(New_filelist->file_name,fname);
+	 strncpy(New_filelist->file_name,fname,4);
 	 New_filelist->Inode_Num=(short)Inode_Num;
 	 if(Target_Dir->num_file==0)//nowdir have no file
 	 {
@@ -773,34 +796,6 @@ void MAKEFILE(int Inode_Num,char fname[],Dir *Target_Dir, _Bool F_D,int fsize)//
 	 int Block_Num=BLOCKCHECK();
 	 CHANGE_SBBLOCK(Block_Num,ifp);
 	 ADD_SDIR(Target_Dir,fname,Target_Dir->inode_num,Inode_Num,F_D,ifp);
-	 //real block should change
-	 /*
-		 int size,listnum;
-		 File_List *tmp;
-		 tmp=CMPNAME(Target_Dir,fname,'n');
-		 listnum=Target_Dir->num_file-1;
-		 Sdir temp;
-		 temp.FD=F_D;
-		 strncpy(temp.name,fname,4);
-		 temp.name[5]=0;
-		 temp.inode=tmp->Inode_Num;
-		 int *blocklist=MAKE_BLOCKLIST(CurrentDir_Inumber);
-		 if(listnum<=16)
-		 fseek(ifp,2+64+128+(32*512)+(128*blocklist[0])+(8*listnum),0);
-		 else
-		 fseek(ifp,2+64+128+(32*512)+(128*blocklist[(listnum/16)-1])+(8*((listnum%16)-1)),0);
-		 fwrite(&temp,sizeof(Sdir),1,ifp);
-
-
-
-
-	 //parent dir have to increase size;
-	 Inode *dir;
-	 dir=GOTOINODE(CurrentDir_Inumber,'r',ifp);
-	 dir->File_size+=8;
-	 GOTOINODE(CurrentDir_Inumber,'w',ifp);
-	 fwrite(dir,sizeof(Inode),1,ifp);
-	  */
 	 fclose(ifp);
 }
 Inode *GOTOINODE(int a,char mode, FILE* ifp)     // a : 아이노드 번호, mode : ???, ifp : 아이노드 정보를 읽어올 파일(파일시스템)
@@ -882,7 +877,7 @@ int BLOCKCHECK()
 
 	 unsigned int i=1;
 	 int a=0;
-	 /*
+	// /*
 	 //for block check
 	 printf ("------------SB_BLOCK CHECK------------\n");
 	 int x;
@@ -898,7 +893,7 @@ int BLOCKCHECK()
 	 }
 	 printf("\n");
 	 }
-	  */
+//	  */
 	 for(;a<1024;a++)
 	 {
 		  if((sb_block[a/32]&(i<<(a%32)))==0)
@@ -1061,7 +1056,7 @@ int CHECK_DINBLOCK(Inode I_node,int block_num[],FILE *ifp)//테스트 필요
 
 	 return a;
 }
-void STORE_INDIRECT(unsigned long long block_num[], int store,int num_block)
+void STORE_INDIRECT(unsigned long long block_num[], int store)
 {
 	 FILE *ifp=fopen("mymkfs.bin", "rb+");
 
@@ -1221,8 +1216,36 @@ void FIX_SDIR(int listnum,Dir *Target_Dir,char fname[],int inodenum,_Bool F_D,FI
 	 fwrite(dir,sizeof(Inode),1,ifp);
 	 free(tmpnode);
 }
-void RM_SDIR()
-{}
+void RM_SDIR(Dir *Target_Dir,char fname[])
+{
+	 FILE *ifp=fopen("mymkfs.bin","rb+");
+	 int listnum=Target_Dir->num_file;
+	 File_List *temp;
+	 temp=Target_Dir->pFileData;
+	 Sdir flist[listnum];
+	 for(int x=0;x<listnum;x++)
+	 {
+		  Inode *tmp=GOTOINODE(temp->Inode_Num,'r',ifp);
+				flist[x].FD=tmp->ForD;
+		  memset(flist[x].name,0,sizeof(char));
+		  strncpy(flist[x].name,temp->file_name,4);
+		  flist[x].inode=temp->Inode_Num;
+		  temp=temp->Next;
+	 }
+	 if(listnum<16)
+	 {
+Inode *Tard=GOTOINODE(Target_Dir->inode_num,'r',ifp);
+		  fseek(ifp,2+64+128+(32*512)+(128*Tard->direct),0);
+		  Sdir t[16]={0,};
+		  fwrite(&t,sizeof(Sdir),16,ifp);
+		  fseek(ifp,2+64+128+(32*512)+(128*Tard->direct),0);
+		  fwrite(&flist,sizeof(Sdir),listnum,ifp);
+	 }
+	 else
+	 {
+	 }
+	 fclose(ifp);
+}
 File_List *LOADING_SDIR(int inodenum)
 {
 	 FILE *ifp=fopen("mymkfs.bin","rb");
@@ -1230,7 +1253,7 @@ File_List *LOADING_SDIR(int inodenum)
 	 int listnum,blocknum;
 	 Inode *tmpnode=GOTOINODE(inodenum,'r',ifp);
 	 listnum=(tmpnode->File_size)/8;
-//	 printf("listnum %d",listnum);
+	 //	 printf("listnum %d",listnum);
 	 blocknum=listnum/16;
 	 if(listnum%16>0)
 		  blocknum++;
@@ -1244,29 +1267,29 @@ File_List *LOADING_SDIR(int inodenum)
 				File *tmp =GOTOBLOCK(blocklist[x],'d','r',ifp);
 				sdirlist[x]=tmp->file_type.dir;
 		  }
-	 
+
 	 }
 
-		  //링크드리스트 구현
+	 //링크드리스트 구현
 	 File_List *head,*temp;
-		  head=(File_List*)calloc(1,sizeof(File_List));
-		  strncpy(head->file_name,sdirlist[0][0].name,5);
-		  head->Inode_Num=sdirlist[0][0].inode;
-//		  printf("ii%s  \n",sdirlist[0][1].name);
-		  temp=head;
-		  for(int i=0;i<blocknum;i++)
-		  {
-	 for(int x=1;x<listnum;x++)
+	 head=(File_List*)calloc(1,sizeof(File_List));
+	 strncpy(head->file_name,sdirlist[0][0].name,5);
+	 head->Inode_Num=sdirlist[0][0].inode;
+	 //		  printf("ii%s  \n",sdirlist[0][1].name);
+	 temp=head;
+	 for(int i=0;i<blocknum;i++)
 	 {
-		   File_List *pftmp=(File_List*)calloc(1,sizeof(File_List));
-		 temp->Next=pftmp;
-		  strcpy(temp->Next->file_name,sdirlist[i][x].name);
-		  pftmp->Inode_Num=sdirlist[i][x].inode;
-//		  printf("sdirlist[i][x]=%s",sdirlist[i][x].name);
-		  temp=temp->Next;
-	 }
+		  for(int x=1;x<listnum;x++)
+		  {
+				File_List *pftmp=(File_List*)calloc(1,sizeof(File_List));
+				temp->Next=pftmp;
+				strcpy(temp->Next->file_name,sdirlist[i][x].name);
+				pftmp->Inode_Num=sdirlist[i][x].inode;
+				//		  printf("sdirlist[i][x]=%s",sdirlist[i][x].name);
+				temp=temp->Next;
 		  }
+	 }
 	 temp->Next=NULL;
 	 fclose(ifp);
-return head;
+	 return head;
 }

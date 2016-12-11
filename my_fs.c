@@ -13,7 +13,7 @@ int main()
 	pRootDir -> pNextDir = NULL;
 	pRootDir -> pSimilDir = NULL;
 	pRootDir -> pPrevDir = NULL;
-	pRootDir -> num_file=2;
+	pRootDir -> num_file=LOAD_DATA(0) ;
 	pRootDir -> pFileData = LOADING_SDIR(0);
 	strcpy(pRootDir -> name, "ROOT");
 	pCurrentDir = pRootDir;
@@ -27,6 +27,8 @@ int main()
 		return 0;
 	}
 
+	CONSTRUCT_BUILD(pRootDir);
+
 	/// 파일시스템이 존재한다면 쉘 생성
 	
 	while(1)
@@ -36,7 +38,7 @@ int main()
 		MY_PWD(pRootDir,pCurrentDir);
 		printf("]");
 		printf("$ ");
-		USER_INPUT();
+	USER_INPUT();
 		INcase=CLASSIFY_INCASE();
 		switch(INcase)
 		{
