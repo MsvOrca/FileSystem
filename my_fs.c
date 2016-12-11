@@ -43,7 +43,7 @@ int main()
 			case 3 : MY_SHOWFILE(Usrbuf1, Usrbuf2, Usrbuf3, pCurrentDir);break;
 			case 4 : MY_PWD(pRootDir, pCurrentDir);printf("\n");break;
 			case 5 : pCurrentDir = MY_CD(pCurrentDir, Usrbuf1,pRootDir);break;
-			case 6 : MY_CP();break;
+			case 6 : MY_CP(Usrbuf1,Usrbuf2,pCurrentDir);break;
 			case 7 : MY_CPTO();break;
 			case 8 : MY_CPFROM(Usrbuf1,Usrbuf2,pCurrentDir);break;
 			case 9 : MY_MKDIR(pCurrentDir, Usrbuf1);break;
