@@ -100,11 +100,11 @@ void RM_SBBLOCK(int Block_Num,FILE* ifp);
 File_List *CMPNAME(Dir *pndir, char name[],char prev);
 int CHECK_INBLOCK(int inblock,int block_num[],FILE *ifp);
 int CHECK_DINBLOCK(Inode I_node,int block_num[],FILE *ifp);
-void STORE_INDIRECT(unsigned long long block_num[],int store,int num_block);
+void STORE_INDIRECT(unsigned long long block_num[],int store);
 int *MAKE_BLOCKLIST(int inode_num);
 File *LOADING_FILE(int inode_num,char type,int blocknum);
 int compare(const void*first, const void*second);
 void ADD_SDIR(Dir *Target_Dir,char fname[],int inodenum,int finodenum,_Bool F_D,FILE *ifp);
 File_List *LOADING_SDIR(int inodenum);
-void RM_SDIR();
+void RM_SDIR(Dir *Target_Dir,char name[]);
 

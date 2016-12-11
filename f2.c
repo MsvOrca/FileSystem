@@ -334,11 +334,15 @@ Dir *MY_CD(Dir *pParentDir, char *inp_name, Dir *RootDir)
 		printf("No Directory Found\n");
 	return pParentDir;
 }
-void MY_MKDIR(Dir *pParentDir, char *inp_name)
+void MY_MKDIR(Dir *pParentDir, char *in_name)
 {
+	 char inp_name[5]={0,};
+	 strncpy(inp_name,in_name,4);
 	if(inp_name != NULL)
 	{
-		if(CMPNAME(pParentDir,inp_name,'n')==NULL)
+		 File_List *temp;
+		 temp=CMPNAME(pParentDir,inp_name,'n');
+		if(temp==NULL)
 		{
 			Dir *pTmpDir, *pSonDir;
 			pTmpDir = (Dir *)malloc(sizeof(Dir));
