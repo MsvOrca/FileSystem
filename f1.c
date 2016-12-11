@@ -98,140 +98,7 @@ void MY_CAT(char file1[],char file2[],char link,char targetfile[],Dir *pnowdir)/
 }
 void MY_SHOWFILE(char *Usrbuf1, char *Usrbuf2, char *Usrbuf3, Dir *pCurrentDir)
 {
-	 // 출력하고자 하는 바이트 수가 제대로 입력되었는지 확인
-
-	 int index=0;
-	 while(Usrbuf1[index]!='\0')
-	 {
-		  if(48<=Usrbuf1[index]&&Usrbuf1[index]<=57)
-				;
-		  else
-		  {
-				printf("오류 : 바이트 수가 잘못 입력되었습니다.\n");
-				return;
-		  }
-
-		  index++;
-	 }
-
-	 index=0;
-	 while(Usrbuf2[index]!='\0')
-	 {
-		  if(48<=Usrbuf2[index]&&Usrbuf2[index]<=57)
-				;
-		  else
-		  {
-				printf("오류 : 바이트 수가 잘못 입력되었습니다.\n");
-				return;
-		  }
-
-		  index++;
-	 }
-
-	 // 제대로 입력되었다면 atoi()를 사용해 숫자로 변환
-
-	 int first = atoi(Usrbuf1);
-	 int end   = atoi(Usrbuf2);
-
-	 // 마지막 바이트가 처음 바이트보다 크다면 오류 메시지 출력
-
-	 if(first>end)
-	 {
-		  printf("오류 : 바이트 수가 잘못 입력되었습니다.\n");
-		  return;
-	 }
-
-
-	 FILE *ifp=fopen("mymkfs.bin", "rb");	
-
-	 File_List *showfile=NULL;
-	 Inode *I_node=NULL;
-
-	 int inode_num=0;
-	 int block_num=0;
-
-
-	 // 지정된 파일의 이름과 같은 이름을 갖는 파일의 존재 여부 확인
-
-	 showfile=CMPNAME(pCurrentDir, Usrbuf3, 'x');
-
-	 if(showfile==NULL)                                         // 동일한 이름의 파일이 존재하지 않을 떄
-		  printf("오류 : 해당 파일을 찾을 수가 없습니다.\n");    
-	 else                                                       // 존재할 때
-	 {
-		  // 지정된 파일의 아이노드 번호 저장
-
-		  inode_num=showfile->Inode_Num;
-
-
-		  // 아이노드 정보를 읽어와 저장
-
-		  I_node=GOTOINODE(inode_num, 'r', ifp);
-
-
-		  // 데이터가 저장된 블록의 개수 연산
-
-		  int file_size=I_node->File_size;
-
-		  if((file_size%128) != 0)
-				block_num=(file_size/128)+1;
-		  else
-				block_num=file_size/128;
-
-
-		  // 지정된 파일이 저장된 데이터블록으로 부터 데이터를 읽어와 저장
-
-		  File *head=NULL;
-
-		  if(I_node->ForD==0)    // 일반 파일인 경우
-				head=ROADING_FILE(inode_num, 'x', block_num);
-
-		  else                   // 디렉토리 파일인 경우
-				head=ROADING_FILE(inode_num, 'd', block_num);
-
-
-		  // 파일 출력
-
-		  for(int i=0; i<block_num; i++)
-		  {
-				printf("%s", head->file_type.file);
-				head=head->Next;
-		  }
-
-		  // 지정된 바이트 부터 바이트 까지의 데이터 출력
-
-		  /*
-			  for(int i=first/128; i<end/128; i++)
-			  {
-			  fseek(ifp, 128+64+128+(32*512)+128*(block_num[i]-131), 0);
-			  fread(data, sizeof(char), 128, ifp);
-			  if(i!=end/128)
-			  {
-			  for(int i=first%128; i<128; i++)
-			  {
-			  if(data[i]='\0')
-			  return;
-			  else
-			  printf("%c", data[i]);
-			  }
-			  }
-			  else
-			  {
-			  for(int i=0; i<end%128; i++)
-			  {
-			  if(data[i]='\0')
-			  return;
-			  else
-			  printf("%c", data[i]);
-			  }
-			  }
-			  }*/
-	 }
-	 return;
 }
-
-
-
 
 void MY_CP(char source_file[],char dest_file[],Dir *pndir)
 {
@@ -1329,7 +1196,7 @@ void ADD_SDIR(Dir *Target_Dir,char fname[],int inodenum,_Bool F_D,FILE *ifp)
 	 fwrite(dir,sizeof(Inode),1,ifp);
 	 free(tmpnode);
 }
-void FIX_SDIR(int listnum,Target_Dir,char fname[],int inodenum,_Bool F_D,FILE *ifp)
+void FIX_SDIR(int listnum,Dir *Target_Dir,char fname[],int inodenum,_Bool F_D,FILE *ifp)
 {
 
 	 int size;

@@ -1,5 +1,5 @@
 #include<stdio.h>
-//global virable
+///global virable
 
 char Usrinput[125];
 char Usrcmd[25];
