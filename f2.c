@@ -263,18 +263,6 @@ Dir *MY_CD(Dir *pParentDir, char *inp_name, Dir *RootDir)
 		  pSonDir = ABSOLUTE_PATH(RootDir, inp_name);
 		  if(ABSOLUTE_PATH(RootDir, inp_name) != NULL)
 				pParentDir = pSonDir;
-<<<<<<< HEAD
-				return pParentDir;
-			}
-			else
-				pSonDir = pSonDir -> pSimilDir;
-		}
-	}
-	CurrentDir_Inumber=pParentDir->inode_num;
-	if(pSonDir == NULL)
-		printf("No Directory Found\n");
-	return pParentDir;
-=======
 	 }
 	 else if(inp_name[0] == '/' && inp_name[1] == '\0')
 		  pParentDir = pSonDir = RootDir;
@@ -301,7 +289,6 @@ Dir *MY_CD(Dir *pParentDir, char *inp_name, Dir *RootDir)
 		  printf("No Directory Found\n");
 	 CurrentDir_Inumber=pParentDir->inode_num;
 	 return pParentDir;
->>>>>>> 200c3a2ed960c0e8b542fa629697fd14779493b6
 }
 void MY_MKDIR(Dir *pParentDir, char *inp_name)
 {
@@ -347,58 +334,47 @@ void MY_RMDIR(Dir *pParentDir, char *inp_name)
 	 }
 	 MY_RM(pParentDir,inp_name);
 }
-<<<<<<< HEAD
-void OUTPUT_LIST(File_List **pTmp_File, char *inp_name, char *inp_name2, short x)
+void OUTPUT_LIST(File_List *pTmp_File, char *inp_name, char *inp_name2, short x)
 {
 	if(strcmp(inp_name, "-i") == 0)
 		for(x;x>0;x--)
 		{
-			printf("%hd ", pTmp_File[x] -> Inode_Num);
-			printf(" %s\n", pTmp_File[x] -> file_name);
+			printf("%hd ", pTmp_File -> Inode_Num);
+			printf(" %s\n", pTmp_File -> file_name);
+			pTmp_File = pTmp_File -> Next;
 		}
 	else if(strcmp(inp_name, "-l") == 0)
 		for(x;x>0;x--)
 		{
-			OUTPUT_TIME(pTmp_File[x]);
-			printf(" %s\n", pTmp_File[x] -> file_name);
+			OUTPUT_TIME(pTmp_File);
+			printf(" %s\n", pTmp_File -> file_name);
+			pTmp_File = pTmp_File -> Next;
 		}
 	else if(strcmp(inp_name, "-li") == 0 || strcmp(inp_name, "-il") == 0)
 		for(x;x>0;x--)
 		{
-			printf("%hd  ", pTmp_File[x] -> Inode_Num);
-			OUTPUT_TIME(pTmp_File[x]);
-			printf(" %s\n", pTmp_File[x] -> file_name);
+			printf("%hd  ", pTmp_File -> Inode_Num);
+			OUTPUT_TIME(pTmp_File);
+			printf(" %s\n", pTmp_File -> file_name);
+			pTmp_File = pTmp_File -> Next;
 		}
 	else
 		for(x;x>0;x--)
 		{
-			printf("%s\n", pTmp_File[x] -> file_name);
+			printf("%s\n", pTmp_File -> file_name);
+			pTmp_File = pTmp_File -> Next;
 		}
-=======
-void MY_TREE(Dir *pRootDir)
-{
-	 Dir *pTmpDir;
-	 pTmpDir = (Dir *)malloc(sizeof(Dir));
-	 //pTmpDir = pRootDir -> pNext;
-
-	 printf("/\n");
-	 while(1)
-	 {
-
-	 }
-
->>>>>>> 200c3a2ed960c0e8b542fa629697fd14779493b6
 }
 //i
 void MY_LS(Dir *pParentDir, char *inp_name, char *inp_name2, Dir *RootDir)
 {
-<<<<<<< HEAD
-	File_List *pTmp_File[30];
+	File_List *pTmp_File;
 	Dir *pSonDir;
 	pSonDir = (Dir *)malloc(sizeof(Dir));
 	short x=pParentDir->num_file;
 	pSonDir = pParentDir -> pNextDir;
-	pTmp_File[0] = pParentDir -> pFileData; 
+	pTmp_File = pParentDir -> pFileData;
+	/**
 	for(int a = 0 ; a < x; a++)
 	{
 		if(a == 0)
@@ -411,11 +387,9 @@ void MY_LS(Dir *pParentDir, char *inp_name, char *inp_name2, Dir *RootDir)
 	for(int a = 0; a < x; a++)
 		printf("2TMP : %s\n", pTmp_File[a] -> file_name);
 	x = pParentDir -> num_file;
+	**/
 	if((inp_name[0] == '-' && inp_name2[0] == '\0') || inp_name[0] == '\0')
-	{
-		printf("WORKING\n");
-		//OUTPUT_LIST(pTmp_File, inp_name, inp_name2, x);
-	}
+		OUTPUT_LIST(pTmp_File, inp_name, inp_name2, x);
 	else
 	{	
 		if(inp_name2[0] =='\0')
@@ -423,15 +397,54 @@ void MY_LS(Dir *pParentDir, char *inp_name, char *inp_name2, Dir *RootDir)
 		{
 			pSonDir = MY_CD(pParentDir, inp_name2, RootDir);
 			x = pSonDir -> num_file;
-			pTmp_File[x] = pSonDir -> pFileData;
+			pTmp_File = pSonDir -> pFileData;
 			for(x-1; x > 0; x--)
 			{
-				pTmp_File[x] = pTmp_File[x+1] -> Next;
+				pTmp_File = pTmp_File -> Next;
 			}
 		}
 		OUTPUT_LIST(pTmp_File, inp_name, inp_name2, x);
 	}
 	free(pSonDir);
+}
+void MY_TREE(Dir *pRootDir)
+{
+	Dir *pSonDir;
+	pSonDir = (Dir *)malloc(sizeof(Dir));
+	pSonDir = pRootDir -> pNextDir;
+	int cnt = 0;
+	printf("/\n");
+	while(1)
+	{
+		printf("--");
+		for(int a = 0; a < cnt; a++)
+			printf("---");
+		printf("* %s\n", pSonDir -> name);
+		if(pSonDir == NULL)
+			return ;
+		if(pSonDir -> pNextDir == NULL && pSonDir -> pSimilDir == NULL)
+		{
+			while(pSonDir -> pPrevDir -> pSimilDir != NULL || pSonDir -> pPrevDir != pRootDir)
+			{
+				pSonDir = pSonDir -> pPrevDir;
+				cnt--;
+			}
+			if(pSonDir -> pPrevDir == pRootDir && pSonDir -> pSimilDir == NULL)
+			{
+				return;
+			}
+			pSonDir = pSonDir -> pSimilDir;
+		}
+		else if(pSonDir -> pNextDir == NULL)
+		{
+			pSonDir = pSonDir -> pSimilDir;
+		}
+		else
+		{
+			pSonDir = pSonDir -> pNextDir;
+			cnt++;
+		}
+	}
 }
 int compare(const void*first, const void *second)
 {
@@ -444,102 +457,4 @@ int compare(const void*first, const void *second)
 void LOAD_DATA()
 {
 	File *head;
-=======
-	 File_List *pTmp_File;
-	 Dir *pSonDir;
-	 pSonDir = (Dir *)malloc(sizeof(Dir));
-	 short x=pParentDir->num_file;
-	 pTmp_File = pParentDir -> pFileData;
-	 pSonDir = pParentDir -> pNextDir;
-	 if(strcmp(inp_name2, "\0") == 0 || inp_name[0] != '-')
-	 {
-		  if(strcmp(inp_name, "\0") == 0)
-				for(x=pParentDir->num_file;x>0;x--)
-				{
-					 printf("%s\n", pTmp_File -> file_name);
-					 pTmp_File = pTmp_File -> Next;
-				}
-		  else if(strcmp(inp_name, "-i") == 0)
-				for(x=pParentDir->num_file;x>0;x--)
-				{
-					 printf("%hd ", pTmp_File -> Inode_Num);
-					 printf(" %s\n", pTmp_File -> file_name);
-					 pTmp_File = pTmp_File -> Next;
-				}
-		  else if(strcmp(inp_name, "-l") == 0)
-				for(x=pParentDir->num_file;x>0;x--)
-				{
-					 OUTPUT_TIME(pTmp_File);
-					 printf(" %s\n", pTmp_File -> file_name);
-					 pTmp_File = pTmp_File -> Next;
-				}
-		  else if(strcmp(inp_name, "-li") == 0 || strcmp(inp_name, "-il") == 0)
-				for(x=pParentDir->num_file;x>0;x--)
-				{
-					 printf("%hd  ", pTmp_File -> Inode_Num);
-					 OUTPUT_TIME(pTmp_File);
-					 printf(" %s\n", pTmp_File -> file_name);
-					 pTmp_File = pTmp_File -> Next;
-				}
-	 }
-	 else
-	 {	
-		  {
-				if(inp_name2[0] == '/' && inp_name2[1] != '\0')
-				{
-					 pSonDir = ABSOLUTE_PATH(RootDir, inp_name2);
-				}
-				else if(inp_name2[0] == '/' && inp_name2[1] == '\0')
-					 pSonDir = RootDir;
-				else if(inp_name2[0] == '.')
-				{
-					 pSonDir = RELATIVE_PATH(pParentDir, inp_name2);
-				}
-				else
-				{
-					 while(pSonDir != NULL)
-					 {
-						  if(strcmp(pSonDir -> name, inp_name2) == 0)
-						  {
-								break;
-						  }
-						  else
-								pSonDir = pSonDir -> pSimilDir;
-					 }
-				}
-				if(pSonDir == NULL)
-				{
-					 printf("No Directory Found\n");
-					 return ;
-				}
-				pTmp_File = pSonDir -> pFileData;
-		  }
-		  {
-				if(strcmp(inp_name, "\0") == 0)
-				{
-					 printf("%s\n", pTmp_File -> file_name);
-					 pTmp_File = pTmp_File -> Next;
-				}
-				else if(strcmp(inp_name, "-i") == 0)
-				{
-					 printf("%hd ", pTmp_File -> Inode_Num);
-					 printf(" %s\n", pTmp_File -> file_name);
-					 pTmp_File = pTmp_File -> Next;
-				}
-				else if(strcmp(inp_name, "-l") == 0)
-				{
-					 OUTPUT_TIME(pTmp_File);
-					 printf(" %s\n", pTmp_File -> file_name);
-					 pTmp_File = pTmp_File -> Next;
-				}
-				else if(strcmp(inp_name, "-li") == 0 || strcmp(inp_name, "-il") == 0)
-				{
-					 printf("%hd  ", pTmp_File -> Inode_Num);
-					 OUTPUT_TIME(pTmp_File);
-					 printf(" %s\n", pTmp_File -> file_name);
-					 pTmp_File = pTmp_File -> Next;
-				}
-		  }
-	 }
->>>>>>> 200c3a2ed960c0e8b542fa629697fd14779493b6
 }
