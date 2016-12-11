@@ -73,7 +73,7 @@ void MY_CAT(char file1[],char file2[],char link,char targetfile[],Dir *pnowdir)/
 				int blocknum=pinode->File_size/128;
 				if(pinode->File_size%128>0)
 					 blocknum++;
-				File *file1=ROADING_FILE((int)pfile->Inode_Num,'f',blocknum);
+				File *file1=LOADING_FILE((int)pfile->Inode_Num,'f',blocknum);
 				File *temp;
 				temp=file1;
 				for(int x=0;x<blocknum;x++)
@@ -114,7 +114,7 @@ void MY_CP(char source_file[],char dest_file[],Dir *pndir)
 					 int blocknum=(nownode->File_size)/128;
 					 if((nownode->File_size)%128>0)
 						  blocknum++;
-					 File *nowfile=ROADING_FILE(now->Inode_Num,'f',blocknum);
+					 File *nowfile=LOADING_FILE(now->Inode_Num,'f',blocknum);
 					 INPUT_TIME(nownode);
 					 int need_inblock=0,need_dinblock=0;
 					 if(blocknum>=97)
@@ -1141,7 +1141,7 @@ int *MAKE_BLOCKLIST(int inode_num)
 
 }
 
-File *ROADING_FILE(int inode_num,char type,int blocknum)
+File *LOADING_FILE(int inode_num,char type,int blocknum)
 {
 
 	 // 파일 오픈

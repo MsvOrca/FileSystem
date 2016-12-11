@@ -17,7 +17,7 @@ void INPUT_TIME(Inode *test){//시간을 넣는 함수
 
 	return;
 }
-void OUTPUT_TIME(File_List *pFileData)
+void OUTPUT_TIME(File_List *pFileData)//시간을 출력하는 함수
 {
 	Inode *Tmp_Inode;
 	FILE *ifp;
@@ -26,7 +26,7 @@ void OUTPUT_TIME(File_List *pFileData)
 	Tmp_Inode = GOTOINODE(pFileData -> Inode_Num, 'r', ifp);
 
 
-	switch((int)Tmp_Inode -> ForD)
+	switch((int)Tmp_Inode -> ForD)//디렉토리인지 파일인지 타입을 알려줌
 	{
 		case 1 :
 			printf("d ");
@@ -36,9 +36,9 @@ void OUTPUT_TIME(File_List *pFileData)
 			break;
 	}
 
-	printf("%4d ", Tmp_Inode -> File_size);
+	printf("%4d ", Tmp_Inode -> File_size);//파일 사이즈를 출력해줌
 
-	printf("%d/", Tmp_Inode -> Timed.year);
+	printf("%d/", Tmp_Inode -> Timed.year);//시간들을 10을 넘을 경우 11이런식으로 아니면 08 이런식으로 출력하게 설정
 	if(Tmp_Inode -> Timed.mon < 10)
 		printf("0");
 	printf("%d/", Tmp_Inode -> Timed.mon);
@@ -55,26 +55,28 @@ void OUTPUT_TIME(File_List *pFileData)
 		printf("0");
 	printf("%d", Tmp_Inode -> Timed.sec);
 }
-void MY_TREE(Dir *pParentDir, Dir *pRootDir, char *inp_name)
+void MY_TREE(Dir *pParentDir, Dir *pRootDir, char *inp_name)//트리를 출력하게 하는 함수
 {
 	Dir *pSonDir;
 	pSonDir = (Dir *)malloc(sizeof(Dir));
-	pSonDir = pParentDir -> pNextDir;
+	pSonDir = pParentDir -> pNextDir;//하위  디렉토리를 임시 디렉토리에 복사
 	int cnt = 0;
 	if(inp_name != NULL)
 		pSonDir = MY_CD(pParentDir, inp_name, pRootDir);
-	if(strcmp(pSonDir -> name, "ROOT") == 0)
+	if(strcmp(pSonDir -> name, "ROOT") == 0)//루트디렉토리일 경우 루트라는 이름대신 /출력
 		printf("/\n");
-	else
-		printf("%s\n", pSonDir -> name);
+	else{
+		printf("%s\n", pSonDir -> name);//현재 디렉토리 출력하게 해줌
+		pSonDir = pSonDir -> pNextDir;
+	}
 	while(1)
 	{
-		if(pSonDir == NULL)
+		if(pSonDir == NULL)//하위 디렉토리가 존재하지 않으면 리턴
 			return ;
 		printf("--");
-		for(int a = 0; a < cnt; a++)
+		for(int a = 0; a < cnt; a++)//cnt를 루프가 돌때마다 증가시켜 루프만큼 ---를 출력하게함
 			printf("---");
-		printf("* %s\n", pSonDir -> name);
+		printf("* %s\n", pSonDir -> name);//트리의 디렉토리 이름 출력
 		if(pSonDir -> pNextDir == NULL && pSonDir -> pSimilDir == NULL)
 		{
 			while(pSonDir -> pPrevDir -> pSimilDir != NULL || pSonDir -> pPrevDir != pParentDir)
@@ -99,7 +101,7 @@ void MY_TREE(Dir *pParentDir, Dir *pRootDir, char *inp_name)
 		}
 	}
 }
-Dir *RELATIVE_PATH(Dir *pParentDir, char *pDir, Dir *pRootDir)
+Dir *RELATIVE_PATH(Dir *pParentDir, char *pDir, Dir *pRootDir)//상대 경로 리턴하는 함수
 {
 	char Tmp_name[4];
 	Dir *pSonDir;
@@ -114,44 +116,36 @@ Dir *RELATIVE_PATH(Dir *pParentDir, char *pDir, Dir *pRootDir)
 		while(i < 30)
 		{
 			Tmp_name[x] = 0;
-			if(pDir[i]=='/' || pDir[i] == '\0')
+			if(pDir[i]=='/' || pDir[i] == '\0')// /나 널문자가 나올때까지 받음
 			{
-				Tmp_name[x] = 0;
-				if(pDir[i]=='/' || pDir[i] == '\0')
-				{
-					Tmp_name[x] = 0;
-					i++;
-					break;
-				}
-				Tmp_name[x] = pDir[i];
-				x++;
+				Tmp_name[x] = 0;// /나 널문자가 나오면 루프를 깨면서 나옴
 				i++;
 				break;
 			}
-			Tmp_name[x] = pDir[i];
+			Tmp_name[x] = pDir[i];// /나 널문자가 아닐 경우 Tmp_name에 저장함
 			x++;
 			i++;
 		}
-		if(strcmp(Tmp_name, ".") == 0)
+		if(strcmp(Tmp_name, ".") == 0)//저장된 문자가 현재 디렉토리를 가리키면 컨티뉴로 루프 초기로 돌아감
 		{
 			continue;
 		}
-		else if(Tmp_name[0] == 0)
+		else if(Tmp_name[0] == 0)//저장된 문자가 없으면 입력 종료로 판단하고 리턴값을 주면서 함수 종료 시킴
 		{
 			return pSonDir;
 		}
-		else if(strcmp(Tmp_name, "..") == 0)
+		else if(strcmp(Tmp_name, "..") == 0)//저장된 문자가 상위디렉토리를 가리키면 상위 디렉토리로감
 		{
 			if(pSonDir != pRootDir)
 				pSonDir = pSonDir -> pPrevDir;
-			else
+			else//현재 디렉토리가 루트디렉토리이면 그냥 유지
 				pSonDir = pRootDir;
 		}
-		else
+		else//저장된 문자가 상위 현재, 혹은 널문자가아닌 그냥 일반적인 경로  판단
 		{
 			while(1)
 			{
-				if(pSonDir -> pNextDir == NULL && pDir[i] != '\0')
+				if(pSonDir -> pNextDir == NULL && pDir[i] != '\0')//
 					return NULL;
 				pSonDir = pSonDir -> pNextDir;
 				if(strcmp(pSonDir -> name, Tmp_name) == 0)
