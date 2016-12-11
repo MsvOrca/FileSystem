@@ -13,6 +13,7 @@ int main()
 	pRootDir -> pNextDir = NULL;
 	pRootDir -> pSimilDir = NULL;
 	pRootDir -> pPrevDir = NULL;
+	pRootDir -> num_file=2;
 	pRootDir -> pFileData = LOADING_SDIR(0);
 	strcpy(pRootDir -> name, "ROOT");
 	pCurrentDir = pRootDir;
