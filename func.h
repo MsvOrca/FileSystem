@@ -68,7 +68,7 @@ void INPUT_TIME(Inode *test);
 void USER_INPUT();
 int CLASSIFY_INPUT(char *buf,int i);
 int CLASSIFY_INCASE();
-int INSERT(Dir *pParentDir, Dir *pSonDir, Dir *pTmpDir, char *inp_name);
+int INSERT(Dir *pParentDir, Dir *pSonDir, Dir *pTmpDir, char *inp_name, char mode);
 Dir *MAKEDIR(void);
 void MY_LS(Dir *pParentDir,char *inp_name,char*inp_name2,Dir *RootDir);//not yet sort
 void MY_CAT(char file1[],char file2[],char link,char targetfile[],Dir *pnowdir);//not yet
@@ -107,4 +107,5 @@ int compare(const void*first, const void*second);
 void ADD_SDIR(Dir *Target_Dir,char fname[],int inodenum,int finodenum,_Bool F_D,FILE *ifp);
 File_List *LOADING_SDIR(int inodenum);
 void RM_SDIR();
-
+int LOAD_DATA(int Inode_Num);
+void CONSTRUCT_BUILD(Dir *pCurrentDir);

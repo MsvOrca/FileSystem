@@ -1210,9 +1210,9 @@ void FIX_SDIR(int listnum,Dir *Target_Dir,char fname[],int inodenum,_Bool F_D,FI
 	 temp.inode=inodenum;
 	 int *blocklist=MAKE_BLOCKLIST(CurrentDir_Inumber);
 	 if(listnum<=16)
-		  fseek(ifp,2+64+128+(32*512)+(128*blocklist[0])+(8*(listnum)),0);
+		  fseek(ifp,2+64+128+(32*512)+(128*blocklist[0])+(8*(listnum-1)),0);
 	 else
-		  fseek(ifp,2+64+128+(32*512)+(128*blocklist[(listnum/16)])+(8*((listnum%16))),0);
+		  fseek(ifp,2+64+128+(32*512)+(128*blocklist[(listnum/16)])+(8*((listnum%16)-1)),0);
 	 fwrite(&temp,sizeof(Sdir),1,ifp);
 	 Inode *dir;
 	 dir=GOTOINODE(CurrentDir_Inumber,'r',ifp);
@@ -1230,7 +1230,7 @@ File_List *LOADING_SDIR(int inodenum)
 	 int listnum,blocknum;
 	 Inode *tmpnode=GOTOINODE(inodenum,'r',ifp);
 	 listnum=(tmpnode->File_size)/8;
-	 //printf("listnum %d",listnum);
+//	 printf("listnum %d",listnum);
 	 blocknum=listnum/16;
 	 if(listnum%16>0)
 		  blocknum++;
@@ -1252,7 +1252,7 @@ File_List *LOADING_SDIR(int inodenum)
 		  head=(File_List*)calloc(1,sizeof(File_List));
 		  strncpy(head->file_name,sdirlist[0][0].name,5);
 		  head->Inode_Num=sdirlist[0][0].inode;
-	//	  printf("ii%s  \n",sdirlist[0][1].name);
+//		  printf("ii%s  \n",sdirlist[0][1].name);
 		  temp=head;
 		  for(int i=0;i<blocknum;i++)
 		  {
@@ -1262,7 +1262,7 @@ File_List *LOADING_SDIR(int inodenum)
 		 temp->Next=pftmp;
 		  strcpy(temp->Next->file_name,sdirlist[i][x].name);
 		  pftmp->Inode_Num=sdirlist[i][x].inode;
-	//	  printf("sdirlist[i][x]=%s",sdirlist[i][x].name);
+//		  printf("sdirlist[i][x]=%s",sdirlist[i][x].name);
 		  temp=temp->Next;
 	 }
 		  }
