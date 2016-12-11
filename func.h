@@ -86,7 +86,7 @@ void MY_TOUCH(Dir *pndir,char name[]);//ok  problem is file more than 4
 void MY_SHOWINODE(char*);//ok
 void MY_SHOWBLOCK(char*);//ok
 void MY_STATE();//ok
-void MY_TREE();//ok
+void MY_TREE(Dir *pRootDir);//ok
 File_List *PASS_FILELIST_NODE(Dir *Target_dir);
 void MAKEFILE(int Inode_Num,char fname[],Dir *Target_Dir,_Bool F_D,int fsize);
 int INODECHECK();
@@ -102,10 +102,9 @@ int CHECK_INBLOCK(int inblock,int block_num[],FILE *ifp);
 int CHECK_DINBLOCK(Inode I_node,int block_num[],FILE *ifp);
 void STORE_INDIRECT(unsigned long long block_num[],int store,int num_block);
 int *MAKE_BLOCKLIST(int inode_num);
-File *ROADING_FILE(int inode_num,char type,int blocknum);
-<<<<<<< HEAD
+File *LOADING_FILE(int inode_num,char type,int blocknum);
 int compare(const void*first, const void*second);
-=======
 void ADD_SDIR(Dir *Target_DIr,char fname[],int inodenum,_Bool F_D,FILE *ifp);
 void RM_SDIR();
->>>>>>> 200c3a2ed960c0e8b542fa629697fd14779493b6
+File_List *LOADING_SDIR(int inodenum);
+void OUTPUT_LIST(File_List *pTmp_File, char *inp_name, char *inp_name2, short x, char *pTmp_LETTER);
