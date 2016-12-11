@@ -3,7 +3,6 @@
 #include<stdlib.h>
 #include<string.h>
 #include"func.h"
-
 int main()
 {
 	CurrentDir_Inumber=0;

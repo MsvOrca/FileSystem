@@ -322,7 +322,7 @@ Dir *MY_CD(Dir *pParentDir, char *inp_name, Dir *RootDir)
 			if(strcmp(pSonDir -> name, inp_name) == 0)
 			{
 				pParentDir = pSonDir;
-			return pParentDir;
+				return pParentDir;
 			}
 			else
 				pSonDir = pSonDir -> pSimilDir;
@@ -399,49 +399,58 @@ void MY_RMDIR(Dir *pParentDir, char *inp_name)
 	}
 	MY_RM(pParentDir,inp_name);
 }
-void OUTPUT_LIST(File_List *pTmp_File, char *inp_name, char *inp_name2, short x)
+void OUTPUT_LIST(File_List **pTmp_File, char *inp_name, char *inp_name2, short x)
 {
 	if(strcmp(inp_name, "-i") == 0)
 		for(x;x>0;x--)
 		{
-			printf("%hd ", pTmp_File -> Inode_Num);
-			printf(" %s\n", pTmp_File -> file_name);
-			pTmp_File = pTmp_File -> Next;
+			printf("%hd ", pTmp_File[x] -> Inode_Num);
+			printf(" %s\n", pTmp_File[x] -> file_name);
 		}
 	else if(strcmp(inp_name, "-l") == 0)
 		for(x;x>0;x--)
 		{
-			OUTPUT_TIME(pTmp_File);
-			printf(" %s\n", pTmp_File -> file_name);
-			pTmp_File = pTmp_File -> Next;
+			OUTPUT_TIME(pTmp_File[x]);
+			printf(" %s\n", pTmp_File[x] -> file_name);
 		}
 	else if(strcmp(inp_name, "-li") == 0 || strcmp(inp_name, "-il") == 0)
 		for(x;x>0;x--)
 		{
-			printf("%hd  ", pTmp_File -> Inode_Num);
-			OUTPUT_TIME(pTmp_File);
-			printf(" %s\n", pTmp_File -> file_name);
-			pTmp_File = pTmp_File -> Next;
+			printf("%hd  ", pTmp_File[x] -> Inode_Num);
+			OUTPUT_TIME(pTmp_File[x]);
+			printf(" %s\n", pTmp_File[x] -> file_name);
 		}
 	else
 		for(x;x>0;x--)
 		{
-			printf("%s\n", pTmp_File -> file_name);
-			pTmp_File = pTmp_File -> Next;
+			printf("%s\n", pTmp_File[x] -> file_name);
 		}
 }
 void MY_LS(Dir *pParentDir, char *inp_name, char *inp_name2, Dir *RootDir)
 {
-	File_List *pTmp_File;
+	File_List *pTmp_File[30];
 	Dir *pSonDir;
 	pSonDir = (Dir *)malloc(sizeof(Dir));
 	short x=pParentDir->num_file;
 	pSonDir = pParentDir -> pNextDir;
-	pTmp_File = pParentDir -> pFileData;
-	if(inp_name[0] == '-' && inp_name2[0] == '\0')
-		OUTPUT_LIST(pTmp_File, inp_name, inp_name2, x);
-	else if(inp_name[0] == '\0')
-		OUTPUT_LIST(pTmp_File, inp_name, inp_name2, x);
+	pTmp_File[0] = pParentDir -> pFileData; 
+	for(int a = 0 ; a < x; a++)
+	{
+		if(a == 0)
+			pTmp_File[a] = pParentDir -> pFileData;
+		else
+			pTmp_File[a] = pTmp_File[a-1] -> Next;
+		printf("TMP : %s\n", pTmp_File[a] -> file_name);
+	}
+	qsort(*pTmp_File, x, sizeof(File_List *), compare);
+	for(int a = 0; a < x; a++)
+		printf("2TMP : %s\n", pTmp_File[a] -> file_name);
+	x = pParentDir -> num_file;
+	if((inp_name[0] == '-' && inp_name2[0] == '\0') || inp_name[0] == '\0')
+	{
+		printf("WORKING\n");
+		//OUTPUT_LIST(pTmp_File, inp_name, inp_name2, x);
+	}
 	else
 	{	
 		if(inp_name2[0] =='\0')
@@ -449,11 +458,23 @@ void MY_LS(Dir *pParentDir, char *inp_name, char *inp_name2, Dir *RootDir)
 		{
 			pSonDir = MY_CD(pParentDir, inp_name2, RootDir);
 			x = pSonDir -> num_file;
-			pTmp_File = pSonDir -> pFileData;
+			pTmp_File[x] = pSonDir -> pFileData;
+			for(x-1; x > 0; x--)
+			{
+				pTmp_File[x] = pTmp_File[x+1] -> Next;
+			}
 		}
 		OUTPUT_LIST(pTmp_File, inp_name, inp_name2, x);
 	}
 	free(pSonDir);
+}
+int compare(const void*first, const void *second)
+{
+	File_List *First_Name = (File_List *)first;
+	File_List *Second_Name = (File_List *)second;
+	printf("\nF: %s\nS: %s\n%d\n\n",First_Name -> file_name, Second_Name -> file_name, strcmp((First_Name -> file_name),(Second_Name -> file_name)));
+
+	return strcmp((First_Name -> file_name),(Second_Name -> file_name));
 }
 void LOAD_DATA()
 {

@@ -103,3 +103,4 @@ int CHECK_DINBLOCK(Inode I_node,int block_num[],FILE *ifp);
 void STORE_INDIRECT(unsigned long long block_num[],int store,int num_block);
 int *MAKE_BLOCKLIST(int inode_num);
 File *ROADING_FILE(int inode_num,char type,int blocknum);
+int compare(const void*first, const void*second);
