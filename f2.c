@@ -8,7 +8,7 @@ void INPUT_TIME(Inode *test){//시간을 넣는 함수
 	 time_t timer;
 	 timer = time(NULL);
 	 t = localtime(&timer);
-	 test->Timed.year = t -> tm_year + 1900;//time 헤더에서 부터 가져와서 Inode 구조체에 Timed라는 구조체를 선언하여 값을 입력해//time 헤더에서 부터 가져와서 Inode 구조체에 Timed라는 구조체를 선언하여 값을 입력해줌줌
+	 test->Timed.year = t -> tm_year + 1900;//time 헤더에서 부터 가져와서 Inode 구조체에 Timed라는 구조체를 선언하여 값을 입력해//time 헤더에서 부터 가져와서 Inode 구조체에 Timed라는 구조체를 선언하여 값을 입력해줌
 	 test->Timed.mon = t -> tm_mon + 1;
 	 test->Timed.day = t -> tm_mday;
 	 test->Timed.hour = t -> tm_hour;
@@ -59,15 +59,15 @@ void MY_TREE(Dir *pParentDir, Dir *pRootDir, char *inp_name)//트리를 출력�
 {
 	 Dir *pSonDir;
 	 pSonDir = (Dir *)malloc(sizeof(Dir));
-	 pSonDir = pParentDir -> pNextDir;//하위  디렉토리를 임시 디렉토리에 복사
+	 pSonDir = pParentDir -> pNextDir ;//하위  디렉토리를 임시 디렉토리에 복사
 	 int cnt = 0;
-	 if(inp_name[0] == '\0')
+	 if(inp_name[0] != '\0')
 		  pSonDir = MY_CD(pParentDir, inp_name, pRootDir);
-	 if(strcmp(pSonDir -> name, "ROOT") == 0)//루트디렉토리일 경우 루트라는 이름대신 /출력
+	 if(strcmp(pParentDir -> name, "ROOT") == 0)//루트디렉토리일 경우 루트라는 이름대신 /출력
 		  printf("/\n");
 	 else{
-		  printf("%s\n", pSonDir -> name);//현재 디렉토리 출력하게 해줌
-		  //	pSonDir = pSonDir -> pNextDir;
+		  printf("%s\n", pParentDir -> name);//현재 디렉토리 출력하게 해줌
+		 	pSonDir = pSonDir -> pNextDir;
 	 }
 	 while(1)
 	 {
@@ -145,7 +145,7 @@ Dir *RELATIVE_PATH(Dir *pParentDir, char *pDir, Dir *pRootDir)//상대 경로 �
 		  {
 				while(1)
 				{
-					 if(pSonDir -> pNextDir == NULL && pDir[i] != '\0')//
+					 if(pSonDir -> pNextDir == NULL && pDir[i] != '\0')
 						  return NULL;
 					 pSonDir = pSonDir -> pNextDir;
 					 if(strcmp(pSonDir -> name, Tmp_name) == 0)
@@ -173,12 +173,12 @@ Dir *RELATIVE_PATH(Dir *pParentDir, char *pDir, Dir *pRootDir)//상대 경로 �
 		  }
 	 }
 }
-Dir *ABSOLUTE_PATH(Dir *RootDir, char *pDir)
+Dir *ABSOLUTE_PATH(Dir *RootDir, char *pDir)//리턴값이 절대경로타겟 디렉토리인  함수
 {
 	 char Tmp_name[4];
 	 Dir *pSonDir;
 	 pSonDir = (Dir *)malloc(sizeof(Dir));
-	 pSonDir = RootDir -> pNextDir;
+	 pSonDir = RootDir -> pNextDir;//루트 디렉토리의 하위 디렉토리로 초기화
 	 int x=0;
 	 int i = 1;
 	 while(1)
@@ -186,7 +186,7 @@ Dir *ABSOLUTE_PATH(Dir *RootDir, char *pDir)
 		  x = 0;
 		  while(i < 30)
 		  {
-				if(pDir[i]=='/' || pDir[i] == '\0')
+				if(pDir[i]=='/' || pDir[i] == '\0')//상대랑마찬가지
 				{
 					 Tmp_name[x] = 0;
 					 i++;
@@ -224,7 +224,7 @@ Dir *ABSOLUTE_PATH(Dir *RootDir, char *pDir)
 	 }
 }
 //
-Dir *MAKEDIR()
+Dir *MAKEDIR()//디렉토리를 만드는 함수
 {
 	 Dir *pTmpDir;
 	 pTmpDir = (Dir *)malloc(sizeof(Dir));
@@ -239,16 +239,16 @@ Dir *MAKEDIR()
 }
 
 int INSERT(Dir *pParentDir, Dir *pSonDir, Dir *pTmpDir, char *inp_name, char mode)
-{
+{//디렉토리를 디렉토리 밑에 만들어주는 함수
 	 int i;
 	 i=INODECHECK();
 	 strcpy(pTmpDir -> name, inp_name);
-	 if(pSonDir == NULL)
+	 if(pSonDir == NULL)//하위 디렉토리가 없을 경우
 	 {
 		  pTmpDir -> pPrevDir = pParentDir;
 		  pParentDir -> pNextDir = pTmpDir;
 	 }
-	 else
+	 else//하위 디렉토리가 있을 경우
 	 {
 		  pTmpDir -> pPrevDir = pParentDir;
 		  while(pSonDir -> pSimilDir != NULL)
@@ -257,7 +257,7 @@ int INSERT(Dir *pParentDir, Dir *pSonDir, Dir *pTmpDir, char *inp_name, char mod
 		  }
 		  pSonDir -> pSimilDir = pTmpDir;
 	 }
-	 if(mode == 'N')
+	 if(mode == 'N')//로딩 하는 디렉토리가 아닐경우 파일에 저장
 	 {
 	 pTmpDir->inode_num=i;
 	 MAKEFILE(i,inp_name,pParentDir,1,2);
@@ -274,16 +274,16 @@ int INSERT(Dir *pParentDir, Dir *pSonDir, Dir *pTmpDir, char *inp_name, char mod
 	 return i;
 	 }
 }
-void MY_PWD(Dir *pRootDir, Dir *pParentDir)
+void MY_PWD(Dir *pRootDir, Dir *pParentDir)//현재 위치를 출력해주는 함수
 {
 	 Dir *pTmpDir;
 	 pTmpDir = (Dir *)malloc(sizeof(Dir));
 	 pTmpDir = pRootDir;
 	 if(pParentDir == pRootDir)
-		  printf("/");
+		  printf("/");//루트 디렉토리일경우 /만출력
 
 	 else{
-		  printf("/");
+		  printf("/");//루트가 아닐경우 / 이후에 위치를 찾아서 출력
 		  while(pTmpDir != pParentDir -> pPrevDir)
 		  {
 				pTmpDir = pTmpDir -> pNextDir;
@@ -298,21 +298,21 @@ void MY_PWD(Dir *pRootDir, Dir *pParentDir)
 	 }
 
 }
-Dir *MY_CD(Dir *pParentDir, char *inp_name, Dir *RootDir)
+Dir *MY_CD(Dir *pParentDir, char *inp_name, Dir *RootDir)//위치를 이동하는 함수
 {
 	 Dir *pSonDir;
 	 pSonDir = (Dir *)malloc(sizeof(Dir));
 	 pSonDir = pParentDir -> pNextDir;
 
-	 if(inp_name[0] == '/' && inp_name[1] != '\0')
+	 if(inp_name[0] == '/' && inp_name[1] != '\0')//절대 경로로 가는 함수
 	 {
 		  pSonDir = ABSOLUTE_PATH(RootDir, inp_name);
 		  if(ABSOLUTE_PATH(RootDir, inp_name) != NULL)
 				pParentDir = pSonDir;
 	 }
-	 else if(inp_name[0] == '/' && inp_name[1] == '\0')
+	 else if(inp_name[0] == '/' && inp_name[1] == '\0')//루트로 가는 함수
 		  pParentDir = pSonDir = RootDir;
-	 else if(inp_name[0] == '.')
+	 else if(inp_name[0] == '.')//상대경로일경우 처음에 .이나와서 판단
 	 {
 		  pSonDir = pParentDir;
 		  pSonDir = RELATIVE_PATH(pSonDir, inp_name, RootDir);
@@ -321,7 +321,7 @@ Dir *MY_CD(Dir *pParentDir, char *inp_name, Dir *RootDir)
 	 }
 	 else
 	 {
-		  while(pSonDir != NULL)
+		  while(pSonDir != NULL)//절대 혹은 상대가 아닐경우
 		  {
 				if(strcmp(pSonDir -> name, inp_name) == 0)
 				{
@@ -333,19 +333,19 @@ Dir *MY_CD(Dir *pParentDir, char *inp_name, Dir *RootDir)
 		  }
 	 }
 	 CurrentDir_Inumber=pParentDir->inode_num;
-	 if(pSonDir == NULL)
+	 if(pSonDir == NULL)//디렉토리를 찾지 못할 경우 No Directory Found라고함
 		  printf("No Directory Found\n");
 	 return pParentDir;
 }
 void MY_MKDIR(Dir *pParentDir, char *in_name)
-{
+{//새로운 디렉토리 형성
 	 char inp_name[5]={0,};
 	 strncpy(inp_name,in_name,4);
 	if(inp_name != NULL)
-	{
+	{//이름이 널이 아니면 실행
 		 File_List *temp;
 		 temp=CMPNAME(pParentDir,inp_name,'n');
-		if(temp==NULL)
+		if(temp==NULL)//같은 이름이 존재하지 않으면 실행
 		{
 			Dir *pTmpDir, *pSonDir;
 			pTmpDir = (Dir *)malloc(sizeof(Dir));
@@ -377,14 +377,14 @@ void MY_MKDIR(Dir *pParentDir, char *in_name)
 				fwrite(&temp,sizeof(Sdir),1,ifp);
 				fclose(ifp);
 		  }
-		  else
+		  else//같은 이름이 존재하면 실행
 				printf("mymkdir: cannot create directory '%s': File exists\n",inp_name);
 	 }
-	 else
+	 else//이름이 널이면 실행되지않음
 		  printf("mymkdir : missing file operand\n");
 }
 void MY_RMDIR(Dir *pParentDir, char *inp_name)
-{
+{//존재하는 디렉토리를 파일리스트에서 지움
 	 Dir *pTmpDir;
 
 	 pTmpDir = (Dir *)malloc(sizeof(Dir));
@@ -407,13 +407,13 @@ void MY_RMDIR(Dir *pParentDir, char *inp_name)
 	 MY_RM(pParentDir,inp_name);
 }
 void OUTPUT_LIST(File_List *pTmp_File, char *inp_name, char *inp_name2, short x, char *pTmp_LETTER)
-{
+{//LS의 정보를 출력하는 함수
 	 File_List *pTmp2_File;
 	 pTmp2_File = (File_List *)malloc(sizeof(File_List));
 	 pTmp2_File = pTmp_File;
 	 while(1)
 	 {
-		  if(strcmp(pTmp_LETTER, pTmp2_File -> file_name) == 0)
+		  if(strcmp(pTmp_LETTER, pTmp2_File -> file_name) == 0)//옵션에 따라서 출력
 		  {
 				if(strcmp(inp_name, "-i") == 0)
 				{
@@ -446,7 +446,7 @@ void OUTPUT_LIST(File_List *pTmp_File, char *inp_name, char *inp_name2, short x,
 	 }
 }
 void MY_LS(Dir *pParentDir, char *inp_name, char *inp_name2, Dir *RootDir)
-{
+{//하위 디렉토리들 출력
 	 File_List *pTmp_File;
 	 char pTmp_LETTER[30][5];
 	 Dir *pSonDir;
@@ -466,7 +466,7 @@ void MY_LS(Dir *pParentDir, char *inp_name, char *inp_name2, Dir *RootDir)
 				if(pTmp_File == NULL)
 					 break;
 		  }
-		  qsort(pTmp_LETTER, x, sizeof(pTmp_LETTER[0]), compare);
+		  qsort(pTmp_LETTER, x, sizeof(pTmp_LETTER[0]), compare);//사전식 배열을 위해 퀵소트 사용
 		  pTmp_File = pParentDir -> pFileData;
 		  for(int a = 0; a < x; a++)
 		  {
@@ -474,7 +474,7 @@ void MY_LS(Dir *pParentDir, char *inp_name, char *inp_name2, Dir *RootDir)
 		  }
 	 }
 	 else
-	 {	
+	 {	//경로가 존재할경우 실행됨 절대or상대or 하위 디렉토리중 일부
 		  if(inp_name2[0] =='\0')
 				strcpy(inp_name2, inp_name);
 		  pSonDir = MY_CD(pParentDir, inp_name2, RootDir);
@@ -496,19 +496,19 @@ void MY_LS(Dir *pParentDir, char *inp_name, char *inp_name2, Dir *RootDir)
 
 }
 int compare(const void*first, const void *second)
-{
+{//이름 두개를 비교하는 함수
 	 return strcmp((first),(second));
 }
 int LOAD_DATA(int Inode_Num)
-{
+{//데이터를 로드함// 루트에 몇개가 있는지 비교
 	 FILE *ifp = fopen("mymkfs.bin", "rb");
 	 Inode *pTmp_Inode = GOTOINODE(Inode_Num, 'r', ifp);
-	 int num = pTmp_Inode -> File_size/8;
+	 int num = pTmp_Inode -> File_size/8;//숫자를 파일사이즈를 8로 나눠서 계산
 
 	 return num;
 }
 void CONSTRUCT_BUILD(Dir *pCurrentDir)
-{
+{//파일리스트의 정보로 처음 구조를 빌드함
 	 File_List *pTmp_File;
 	 Inode *pTmp_Inode;
 	 pTmp_File = (File_List *)malloc(sizeof(File_List));
