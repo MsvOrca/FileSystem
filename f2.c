@@ -213,8 +213,8 @@ int INSERT(Dir *pParentDir, Dir *pSonDir, Dir *pTmpDir, char *inp_name)
 				pSonDir = pSonDir -> pSimilDir;
 		  }
 		  pSonDir -> pSimilDir = pTmpDir;
-		  pSonDir->inode_num=i;
 	 }
+		  pTmpDir->inode_num=i;
 	 MAKEFILE(i,inp_name,pParentDir,1,2);
 	 File_List *pPdir,*pNdir;
 	 pPdir=(File_List*)calloc(1,sizeof(File_List));
@@ -304,29 +304,6 @@ void MY_MKDIR(Dir *pParentDir, char *inp_name)
 
 
 				INSERT(pParentDir, pSonDir, pTmpDir, inp_name);
-		/*		//filefeedback
-				FILE *ifp=fopen("mymkfs.bin","rb+");
-				int size,listnum;
-				File_List *tmp;
-				tmp=CMPNAME(pParentDir,inp_name,'n');
-				listnum=pParentDir->num_file-1;
-				Sdir temp;
-				temp.FD=1;
-				strcpy(temp.name,inp_name);
-				temp.inode=tmp->Inode_Num;
-				int *blocklist=MAKE_BLOCKLIST(CurrentDir_Inumber);
-				if(listnum<=16)
-				{
-					 fseek(ifp,2+64+128+(32*512)+(128*blocklist[0])+(8*listnum),0);
-				}
-				else
-				{
-					 int cal=(listnum/16)-1;
-					 fseek(ifp,2+64+128+(32*512)+(128*blocklist[cal])+(8*((listnum%16)-1)),0);
-				}
-				fwrite(&temp,sizeof(Sdir),1,ifp);
-				fclose(ifp);
-*/
 		  }
 		  else
 				printf("mymkdir: cannot create directory '%s': File exists\n",inp_name);
