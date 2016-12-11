@@ -104,7 +104,7 @@ void STORE_INDIRECT(unsigned long long block_num[],int store,int num_block);
 int *MAKE_BLOCKLIST(int inode_num);
 File *LOADING_FILE(int inode_num,char type,int blocknum);
 int compare(const void*first, const void*second);
-void ADD_SDIR(Dir *Target_DIr,char fname[],int inodenum,_Bool F_D,FILE *ifp);
-void RM_SDIR();
+void ADD_SDIR(Dir *Target_Dir,char fname[],int inodenum,int finodenum,_Bool F_D,FILE *ifp);
 File_List *LOADING_SDIR(int inodenum);
-void OUTPUT_LIST(File_List *pTmp_File, char *inp_name, char *inp_name2, short x, char *pTmp_LETTER);
+void RM_SDIR();
+
