@@ -3,9 +3,9 @@
 #include<stdlib.h>
 #include<string.h>
 #include"func.h"
+
 int main()
 {
-	CurrentDir_Inumber=0;
 	Dir *pRootDir;
 	Dir *pCurrentDir;
 	pRootDir = (Dir *)malloc(sizeof(Dir));
@@ -13,8 +13,6 @@ int main()
 	pRootDir -> pNextDir = NULL;
 	pRootDir -> pSimilDir = NULL;
 	pRootDir -> pPrevDir = NULL;
-	pRootDir -> num_file=LOAD_DATA(0) ;
-	pRootDir -> pFileData = LOADING_SDIR(0);
 	strcpy(pRootDir -> name, "ROOT");
 	pCurrentDir = pRootDir;
 
@@ -27,9 +25,7 @@ int main()
 		return 0;
 	}
 
-	CONSTRUCT_BUILD(pRootDir);
-
-	/// 파일시스템이 존재한다면 쉘 생성
+	// 파일시스템이 존재한다면 쉘 생성
 	
 	while(1)
 	{
@@ -38,7 +34,7 @@ int main()
 		MY_PWD(pRootDir,pCurrentDir);
 		printf("]");
 		printf("$ ");
-	USER_INPUT();
+		USER_INPUT();
 		INcase=CLASSIFY_INCASE();
 		switch(INcase)
 		{
@@ -47,7 +43,7 @@ int main()
 			case 3 : MY_SHOWFILE(Usrbuf1, Usrbuf2, Usrbuf3, pCurrentDir);break;
 			case 4 : MY_PWD(pRootDir, pCurrentDir);printf("\n");break;
 			case 5 : pCurrentDir = MY_CD(pCurrentDir, Usrbuf1,pRootDir);break;
-			case 6 : MY_CP(Usrbuf1,Usrbuf2,pCurrentDir);break;
+			case 6 : MY_CP();break;
 			case 7 : MY_CPTO();break;
 			case 8 : MY_CPFROM(Usrbuf1,Usrbuf2,pCurrentDir);break;
 			case 9 : MY_MKDIR(pCurrentDir, Usrbuf1);break;
@@ -58,7 +54,7 @@ int main()
 			case 14 : MY_SHOWINODE(Usrbuf1);break;
 			case 15 : MY_SHOWBLOCK(Usrbuf1);break;
 			case 16 : MY_STATE();break;
-			case 17 : MY_TREE(pCurrentDir, pRootDir, Usrbuf1);break;
+			case 17 : MY_TREE();break;
 			case 18 : return 0;
 			case 0 : system(Usrinput);break;//nedd patch
 		}
