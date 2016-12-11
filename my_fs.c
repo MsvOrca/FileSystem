@@ -13,6 +13,7 @@ int main()
 	pRootDir -> pNextDir = NULL;
 	pRootDir -> pSimilDir = NULL;
 	pRootDir -> pPrevDir = NULL;
+	//pRootDir -> pFileData = LOADING_SDIR(0);
 	strcpy(pRootDir -> name, "ROOT");
 	pCurrentDir = pRootDir;
 
@@ -54,7 +55,7 @@ int main()
 			case 14 : MY_SHOWINODE(Usrbuf1);break;
 			case 15 : MY_SHOWBLOCK(Usrbuf1);break;
 			case 16 : MY_STATE();break;
-			case 17 : MY_TREE();break;
+			case 17 : MY_TREE(pCurrentDir, pRootDir, Usrbuf1);break;
 			case 18 : return 0;
 			case 0 : system(Usrinput);break;//nedd patch
 		}
