@@ -68,7 +68,7 @@ void INPUT_TIME(Inode *test);
 void USER_INPUT();
 int CLASSIFY_INPUT(char *buf,int i);
 int CLASSIFY_INCASE();
-void INSERT(Dir *pParentDir, Dir *pSonDir, Dir *pTmpDir, char *inp_name);
+int INSERT(Dir *pParentDir, Dir *pSonDir, Dir *pTmpDir, char *inp_name, char mode);
 Dir *MAKEDIR(void);
 void MY_LS(Dir *pParentDir,char *inp_name,char*inp_name2,Dir *RootDir);
 void MY_CAT(char file1[],char file2[],char link,char targetfile[],Dir *pnowdir);

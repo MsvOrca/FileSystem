@@ -445,6 +445,11 @@ void OUTPUT_LIST(File_List *pTmp_File, char *inp_name, char *inp_name2, short x,
 		  }
 	 }
 }
+
+int compare(const void*first, const void *second)
+{//이름 두개를 비교하는 함수
+	 return strcmp((first),(second));
+}
 void MY_LS(Dir *pParentDir, char *inp_name, char *inp_name2, Dir *RootDir)
 {//하위 디렉토리들 출력
 	 File_List *pTmp_File;
@@ -494,10 +499,6 @@ void MY_LS(Dir *pParentDir, char *inp_name, char *inp_name2, Dir *RootDir)
 	 }
 	 free(pSonDir);
 
-}
-int compare(const void*first, const void *second)
-{//이름 두개를 비교하는 함수
-	 return strcmp((first),(second));
 }
 int LOAD_DATA(int Inode_Num)
 {//데이터를 로드함// 루트에 몇개가 있는지 비교
